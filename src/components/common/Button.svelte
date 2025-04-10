@@ -1,18 +1,21 @@
-<script>
-    export let href = "/";
-    export let content = "Default";
+<script lang="ts">
+    interface ButtonProps {
+        href: string;
+        content: string;
+        className?: string;
+    }
+    let { href, content, className }: ButtonProps = $props();
 </script>
 
-<a {href} class="btn-contact">
-    {content}
-</a>
+<div class="generic-btn items-center tracking-[1px] max-[1200px]:hidden">
+    <a {href}>
+        {content}
+    </a>
+</div>
 
 <style>
-    .btn-contact {
-        display: flex;
-        align-items: center;
+    .generic-btn {
         color: #fff;
-        letter-spacing: 1px;
         border: 2px solid #f60;
         padding: 7px 58px 7px 25px;
         font-size: 16px;
@@ -21,7 +24,7 @@
             no-repeat;
         transition: all 0.3s;
     }
-    .btn-contact:hover {
+    .generic-btn:hover {
         background-color: #f60;
         background-image: url("/images/icon/hover_arrow_btn.png");
     }
