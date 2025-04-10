@@ -1,7 +1,7 @@
 <script lang="ts">
     import { page } from "$app/state";
     import { onMount } from "svelte";
-    import Button from "../Button.svelte";
+    import Button from "../common/Button.svelte";
 
     let currentPage: String = page.url.pathname;
     let isVisible = true;
@@ -20,17 +20,42 @@
     });
 </script>
 
-<div
-    class="top-header flex justify-center items-center z-40 fixed"
-    class:default={isVisible}
->
-    <div class="inner-top flex justify-between items-center">
-        <div class="logo">
+<div class="top-header bg-transparent z-40 fixed w-full 
+            {isVisible ?
+            'min-[1200px]:h-[191px] min-[768px]:h-[104px] h-[61px]' :
+            'min-[1200px]:h-[66.85px] h-[64px]'}
+            "
+            class:default={isVisible}>
+    <div
+        class="inner-top transition-all duration-300 flex items-center w-full
+               justify-between
+               min-[1200px]:px-[60px]
+               min-[768px]:px-[27px]
+
+               {isVisible ? 
+               "min-[1200px]:h-[185px] min-[1200px]:py-[58px] min-[768px]:h-[104px] min-[768px]:py-[30px] py-[10px]" : 
+               'min-[1200px]:h-[61px] min-[768px]:h-[60px] py-[10px]'}"
+    >
+        <div class="hamburger-menu min-[1200px]:hidden">
+            <img class="h-[12px] w-auto"src="/images/mobile_ico_menu.png" alt="menu-icon">
+        </div>
+        <div class="logo min-[1200px]:w-[164px] min-[768px]:w-[87.5px]">
             <a href="/">
-                <img src="/images/header_img_logo.png" alt="logo" />
+                <img
+                    class="transition-all duration-300 
+                        {isVisible ? 
+                        'min-[1200px]:max-h-[69px] min-[768px]:max-h-[44px] max-h-[40px]' :
+                        'max-h-[40px]'}
+                        "
+                    src="/images/header_img_logo.png"
+                    alt="logo"
+                />
             </a>
         </div>
-        <div class="breadcrumbs flex items-center h-[24px]">
+        <div class="contact-icon min-[1200px]:hidden">
+            <img class="h-[16px] w-auto" src="/images/mobile_ico_contact.png" alt="contact-icon">
+        </div>
+        <div class="breadcrumbs max-[1200px]:hidden flex items-center h-[24px]">
             <h3 class:active={currentPage === "/"}>
                 <a href="/">ECLIPS PICTURES</a>
             </h3>
@@ -49,29 +74,15 @@
 
 <style>
     .top-header.default {
-        height: 191px;
-        width: 100%;
         border-top: 5px solid #f60;
         border-bottom: 1px solid transparent;
-        background-color: transparent;
         transition: all 0.3s;
     }
-    .top-header {
-        height: 66px;
-        width: 100%;
+    .top-header:not(.default) {
         border-top: 5px solid #f60;
         border-bottom: 1px solid #2c2c2e;
         background-color: #1f2022;
         transition: all 0.3s;
-    }
-
-    .inner-top {
-        width: 94%;
-        max-height: 185;
-        top: 0;
-    }
-    .inner-top .logo {
-        width: 164px;
     }
 
     .breadcrumbs .icon {
@@ -82,15 +93,6 @@
         position: relative;
         margin: 0 20px;
         vertical-align: middle;
-    }
-
-    .top-header.default .logo img {
-        max-height: 69px;
-        transition: all 0.3s;
-    }
-    .logo img {
-        max-height: 40px;
-        transition: all 0.3s;
     }
 
     .breadcrumbs .icon::before {
