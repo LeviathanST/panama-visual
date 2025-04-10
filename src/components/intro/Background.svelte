@@ -1,13 +1,14 @@
 <script lang="ts">
     import { circIn } from "svelte/easing";
     import { fade } from "svelte/transition";
+    import { translate } from "../../stores/language";
     let isLoaded = false;
     const handleOnLoading = () => {
         isLoaded = true;
     };
 </script>
 
-<div class="bg h-[90%] max-w-full relative">
+<div class="bg h-[86%] max-w-full relative">
     <img
         src="/images/header_bg_banner_mask.png"
         alt="bg-mask"
@@ -46,7 +47,7 @@
         >
             <span
                 class="leading-[39.6px] text-white tracking-[3px] mb-[5px] text-center w-full h-[39.6px] min-[1200px]:text-[36px] min-[768px]:text-[20px]"
-                >SIMPLICITY IS</span
+                >{translate("SIMPLICITY_IS")}</span
             >
             <strong
                 class=" text-[#f60] tracking-[1px] text-center w-full
@@ -57,7 +58,7 @@
                 min-[768px]:leading-[38.5px]
                 min-[768px]:text-[35px]
                 min-[768px]:h-[38.5px]
-                ">THE ULTIMATE SOPHISTICATION</strong
+                ">{translate("ULTIMATE_SOPHISTICATION")}</strong
             >
         </h1>
     </div>
