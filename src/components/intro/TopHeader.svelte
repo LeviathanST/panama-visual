@@ -2,8 +2,9 @@
     import { page } from "$app/state";
     import { onMount } from "svelte";
     import Button from "../common/Button.svelte";
+    import { translate } from "../../stores/language";
 
-    let currentPage: String = page.url.pathname;
+    const currentPage: String = page.url.pathname;
     let isVisible = true;
     onMount(() => {
         let previousScrollY = window.scrollY;
@@ -20,32 +21,38 @@
     });
 </script>
 
-<div class="top-header bg-transparent z-40 fixed w-full 
-            {isVisible ?
-            'min-[1200px]:h-[191px] min-[768px]:h-[104px] h-[61px]' :
-            'min-[1200px]:h-[66.85px] h-[64px]'}
+<div
+    class="top-header bg-transparent z-40 fixed w-full
+            {isVisible
+        ? 'min-[1200px]:h-[191px] min-[768px]:h-[104px] h-[61px]'
+        : 'min-[1200px]:h-[66.85px] h-[64px]'}
             "
-            class:default={isVisible}>
+    class:default={isVisible}
+>
     <div
-        class="inner-top transition-all duration-300 flex items-center w-full
-               justify-between
+        class="inner-top transition-all duration-300 flex items-center w-full justify-between
                min-[1200px]:px-[60px]
                min-[768px]:px-[27px]
+               max-[768px]:px-[10px]
 
-               {isVisible ? 
-               "min-[1200px]:h-[185px] min-[1200px]:py-[58px] min-[768px]:h-[104px] min-[768px]:py-[30px] py-[10px]" : 
-               'min-[1200px]:h-[61px] min-[768px]:h-[60px] py-[10px]'}"
+               {isVisible
+            ? 'min-[1200px]:h-[185px] min-[1200px]:py-[58px] min-[768px]:h-[104px] min-[768px]:py-[30px] py-[10px]'
+            : 'min-[1200px]:h-[61px] min-[768px]:h-[60px] py-[10px]'}"
     >
         <div class="hamburger-menu min-[1200px]:hidden">
-            <img class="h-[12px] w-auto"src="/images/mobile_ico_menu.png" alt="menu-icon">
+            <img
+                class="h-[12px] w-auto"
+                src="/images/mobile_ico_menu.png"
+                alt="menu-icon"
+            />
         </div>
         <div class="logo min-[1200px]:w-[164px] min-[768px]:w-[87.5px]">
             <a href="/">
                 <img
-                    class="transition-all duration-300 
-                        {isVisible ? 
-                        'min-[1200px]:max-h-[69px] min-[768px]:max-h-[44px] max-h-[40px]' :
-                        'max-h-[40px]'}
+                    class="transition-all duration-300
+                        {isVisible
+                        ? 'min-[1200px]:max-h-[69px] min-[768px]:max-h-[44px] max-h-[40px]'
+                        : 'max-h-[40px]'}
                         "
                     src="/images/header_img_logo.png"
                     alt="logo"
@@ -53,11 +60,15 @@
             </a>
         </div>
         <div class="contact-icon min-[1200px]:hidden">
-            <img class="h-[16px] w-auto" src="/images/mobile_ico_contact.png" alt="contact-icon">
+            <img
+                class="h-[16px] w-auto"
+                src="/images/mobile_ico_contact.png"
+                alt="contact-icon"
+            />
         </div>
         <div class="breadcrumbs max-[1200px]:hidden flex items-center h-[24px]">
             <h3 class:active={currentPage === "/"}>
-                <a href="/">ECLIPS PICTURES</a>
+                <a href="/">{translate("ECLIPS_PICTURES")}</a>
             </h3>
             <div
                 class="icon"
@@ -65,10 +76,10 @@
                 class:portfolio-active={currentPage === "/portfolio"}
             ></div>
             <h3 class:active={currentPage === "/portfolio"}>
-                <a href="/portfolio">OUR PORTFOLIO</a>
+                <a href="/portfolio">{translate("OUR_PORTFOLIO")}</a>
             </h3>
         </div>
-        <Button href="contact" content="CONTACT" />
+        <Button href="contact" content={translate("CONTACT")} />
     </div>
 </div>
 
