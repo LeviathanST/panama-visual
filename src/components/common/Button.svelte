@@ -4,7 +4,7 @@
         content: string;
         className?: string;
     }
-    let { href, content, className }: ButtonProps = $props();
+    let { href, content }: ButtonProps = $props();
 </script>
 
 <div class="generic-btn items-center tracking-[1px] max-[1200px]:hidden">
