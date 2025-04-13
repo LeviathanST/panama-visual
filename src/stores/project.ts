@@ -6,6 +6,7 @@ type Project = {
     category: number,
     image: string,
     time?: string,
+    youtubeId: string,
     description?: string
 }
 let projects = [
@@ -15,6 +16,7 @@ let projects = [
         category: 1,  // VISUALS_VJ
         image: "projects/651wReRZO2OO95JuVEc50cx07BdYnXeaSGbVa5oz.jpeg",
         time: "15-03-2025 / Svd Quốc Gia Mỹ Đình",
+        youtubeId: "huqGpilCwH0",
         description:
             "Client: T&T Group & SHB\nAgency: Hcc productions\nECLIPS PICTURES\nwww.eclipspictures.com",
     },
@@ -24,6 +26,7 @@ let projects = [
         category: 1,  // VISUALS_VJ
         image: "projects/V0q2KFjMcpU8d4Abn0NxS8FhEqjk2XQIDJRWGWR5.jpeg",
         time: "SƠN TÂY",
+        youtubeId: "huqGpilCwH0",
         description:
             "SƠN TÂY 3D MAPPING - HUYỀN SỬ MỘT VÙNG ĐẤT\nAgency: Hàm Nghi\nĐạo diễn: Đặng Lê Minh Trí\nVisuals: Eclips Pictures",
     },
@@ -33,12 +36,14 @@ let projects = [
         category: 1,  // VISUALS_VJ
         image: "projects/RphZjvRbzfydBwbq7IVyfPs0qkOWKpt2FjmdFrzx.jpeg",
         time: "03-05-2024",
+        youtubeId: "huqGpilCwH0",
         description: "ECLIPS PICTURES\nwww.eclipspictures.com",
     },
     {
         id: 4,
         title: "CLASSMATE [Highlight]",
         category: 1,  // VISUALS_VJ
+        youtubeId: "huqGpilCwH0",
         image: "projects/fxbmc3mAlHFWrzm75YZwn9YPSFUETjyjN3yuE85V.jpeg",
     },
     {
@@ -47,6 +52,7 @@ let projects = [
         category: 1,  // VISUALS_VJ
         image: "projects/O2ITKRUrvch4GeFwutTsbzDA3YwYRo1SMSrGuzgJ.jpeg",
         time: "10-10-2023",
+        youtubeId: "huqGpilCwH0",
         description: "Visuals: ECLIPS PICTURES\nwww.eclipspictures.com",
     },
     // New projects with repeated images
@@ -56,6 +62,7 @@ let projects = [
         category: 2,  // AFTERMV
         image: "projects/651wReRZO2OO95JuVEc50cx07BdYnXeaSGbVa5oz.jpeg",  // Repeated
         time: "15-07-2024",
+        youtubeId: "huqGpilCwH0",
         description: "Official aftermovie for Summer Festival 2024\nProduction: ECLIPS PICTURES",
     },
     {
@@ -64,6 +71,7 @@ let projects = [
         category: 3,  // TVC_VIRAL
         image: "projects/V0q2KFjMcpU8d4Abn0NxS8FhEqjk2XQIDJRWGWR5.jpeg",  // Repeated
         time: "20-01-2025",
+        youtubeId: "huqGpilCwH0",
         description: "TV Commercial for Brand X new product\nClient: Brand X\nAgency: Creative Minds",
     },
     {
@@ -72,6 +80,7 @@ let projects = [
         category: 4,  // ECLIPS_STUDIO
         image: "projects/RphZjvRbzfydBwbq7IVyfPs0qkOWKpt2FjmdFrzx.jpeg",  // Repeated
         time: "05-04-2025",
+        youtubeId: "huqGpilCwH0",
         description: "Multi-camera live broadcast\nProduction: ECLIPS STUDIO",
     },
     {
@@ -79,6 +88,7 @@ let projects = [
         title: "NATURE SERIES [Photo Collection]",
         category: 5,  // PHOTOS
         image: "projects/fxbmc3mAlHFWrzm75YZwn9YPSFUETjyjN3yuE85V.jpeg",  // Repeated
+        youtubeId: "huqGpilCwH0",
         description: "Photography series capturing natural landscapes\nPhotographer: ECLIPS PICTURES",
     },
     {
@@ -87,12 +97,12 @@ let projects = [
         category: 6,  // OTHERS
         image: "projects/O2ITKRUrvch4GeFwutTsbzDA3YwYRo1SMSrGuzgJ.jpeg",  // Repeated
         time: "01-03-2025",
+        youtubeId: "huqGpilCwH0",
         description: "Experimental short film project\nDirector: Anonymous\nProduction: ECLIPS PICTURES",
     }
 ];
 for (let i = 11; i <= 100; i++) {
     const category = Math.ceil(i / 15) > 6 ? (i % 6) + 1 : Math.ceil(i / 15); // Distribute across 6 categories
-    const imageIndex = (i - 11) % 5; // Cycle through 5 images
 
     projects.push({
         id: i,
@@ -106,6 +116,7 @@ for (let i = 11; i <= 100; i++) {
         category: category,
         image: "projects/V0q2KFjMcpU8d4Abn0NxS8FhEqjk2XQIDJRWGWR5.jpeg",
         time: '15-03-2025',
+        youtubeId: "huqGpilCwH0",
         description: `Project ${i} for ${category === 1 ? "Visuals/VJ" :
             category === 2 ? "Aftermovie" :
                 category === 3 ? "TVC/Viral" :
