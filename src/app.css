@@ -1,9 +1,13 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @plugin '@tailwindcss/forms';
 @plugin '@tailwindcss/typography';
 
-@theme {
-    --font-display: "Jura", "sans-serif"
+:root {
+  padding: 0;
+  margin: 0;
+  box-sizing: border-box;
 }
 
-
+@theme {
+  --font-display: "Jura", "sans-serif";
+}
