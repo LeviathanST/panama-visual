@@ -79,12 +79,24 @@ let mappingObject = {
         'vi': 'Vào năm 2009, ý tưởng cái tên Eclips được hình thành bởi 2 từ Easy-Clips với mục tiêu ban đầu chỉ là sản xuất những clip giải trí đơn giản, phục vụ 1 số đối tượng khách hàng nhất định.'
     },
     'ABOUT_TEXT_2': {
-        'en': 'After 6 years of operation, accumulating experience and knowledge, in April 2015, Vỹ Vlash decided to establish a company of the same name with the slogan "Simplicity is the ultimate sophistication" - Leonardo Davinci. Therefore, Eclips\'s products always aim to be concise and succinct without reducing the effectiveness for customers. With what has been, is being and will be done, the product is our voice throughout Eclips Pictures\' operation.',
-        'vi': 'Sau 6 năm hoạt động, tích lũy kinh nghiệm và kiến thức, tháng 4 năm 2015, Vỹ Vlash quyết định thành lập công ty cùng tên với slogan "Simplicity is the ultimate sophistication" ( Đơn giản là đỉnh cao của sự tinh tế ) - Leonardo Davinci. Vì thế, những sản phẩm của Eclips luôn hướng tới sự ngắn gọn, xúc tích nhưng không giảm đi tính hiệu quả mang lại cho khách hàng. Với những gì đã, đang và sẽ làm, sản phẩm chính là tiếng nói của chúng tôi trong suốt quá trình hoạt động của Eclips Pictures.'
+        'en': 'After 6 years of operation, accumulating experience and knowledge, in April 2015, Vỹ Vlash decided to establish a company of the same name with the slogan "Simplicity is the ultimate sophistication" - Leonardo Davinci. Therefore, Eclips\'s products always aim to be concise and succinct without reducing the effectiveness for customers.',
+        'vi': 'Sau 6 năm hoạt động, tích lũy kinh nghiệm và kiến thức, tháng 4 năm 2015, Vỹ Vlash quyết định thành lập công ty cùng tên với slogan "Simplicity is the ultimate sophistication" ( Đơn giản là đỉnh cao của sự tinh tế ) - Leonardo Davinci. Vì thế, những sản phẩm của Eclips luôn hướng tới sự ngắn gọn, xúc tích nhưng không giảm đi tính hiệu quả mang lại cho khách hàng.'
+    },
+    'ABOUT_TEXT_3': {
+        'en': 'With what has been, is being and will be done, the product is our voice throughout Eclips Pictures\' operation.',
+        'vi': 'Với những gì đã, đang và sẽ làm, sản phẩm chính là tiếng nói của chúng tôi trong suốt quá trình hoạt động của Eclips Pictures.'
     },
     'LEARN_MORE': {
         'en': 'LEARN MORE',
         'vi': 'TÌM HIỂU THÊM'
+    },
+    'ADDRESS_1': {
+        'en': 'No. 35/91/378 Thuy Khue - Tay Ho District - Hanoi',
+        'vi': 'Số 35/91/378 Thụy Khuê - Q.Tây Hồ - Hà Nội'
+    },
+    'ADDRESS_2': {
+        'en': 'No. 35/91/378 Thuy Khue - Tay Ho District - Hanoi',
+        'vi': 'Số 35/91/378 Thụy Khuê - Quận Tây Hồ - Hà Nội'
     },
 
     // Contact form
