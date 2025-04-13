@@ -1,7 +1,7 @@
 <script lang="ts">
     import { get } from "svelte/store";
-    import { translate } from "../../stores/language";
-    import { categoryStore, writeCurrentCategory } from "../../stores/category";
+    import { translate } from "../stores/language";
+    import { categoryStore, writeCurrentCategory } from "../stores/category";
 
     let selectedCategory = 1;
     let currentIndex = 0;
@@ -32,9 +32,11 @@
     }
 </script>
 
-<div class="menu-outer w-full">
+<div id="menu-outer" class="w-full">
     <!---Width smaller 768px-->
-    <div class="min-[768px]:hidden w-full max-h-full flex justify-center">
+    <div
+        class="min-[768px]:hidden w-full min-[1200px]:h-[166.6px] flex justify-center"
+    >
         <div
             class="item-slider relative w-full h-[100px] flex items-center justify-between"
         >
@@ -50,7 +52,7 @@
                                 item.id
                                     ? 'active'
                                     : ''}"
-                                href="portfolio?c={item.id}"
+                                href="portfolio"
                                 on:click={(e) => chooseCategory(e, item.id)}
                             >
                                 <div
@@ -177,7 +179,7 @@
 </div>
 
 <style>
-    .menu-outer {
+    #menu-outer {
         background-color: #1c1d1f;
         border-top: 1px solid #2d2d2f;
         border-bottom: 1px solid #2d2d2f;
