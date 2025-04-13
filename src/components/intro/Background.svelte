@@ -2,13 +2,22 @@
     import { circIn } from "svelte/easing";
     import { fade } from "svelte/transition";
     import { translate } from "../../stores/language";
+    import { onMount } from "svelte";
     let isLoaded = false;
+    let menuOuter: HTMLElement | null;
+
     const handleOnLoading = () => {
         isLoaded = true;
     };
+    onMount(() => {
+        menuOuter = document.getElementById("menu-outer");
+    });
+    const scrollToGallery = () => {
+        menuOuter?.scrollIntoView({ behavior: "smooth" });
+    };
 </script>
 
-<div class="bg h-[86%] max-w-full relative">
+<div class="bg h-full w-full relative">
     <img
         src="/images/header_bg_banner_mask.png"
         alt="bg-mask"
@@ -78,9 +87,20 @@
             >
         </div>
     </div>
+    <div
+        class="mouse absolute pb-[30px] bottom-0 left-[50%] z-4 cursor-pointer
+               max-[1199px]:hidden
+        "
+        on:click={scrollToGallery}
+    >
+        <img src="images/header_ico_mouse.png" alt="Scroll Down" />
+    </div>
 </div>
 
 <style>
+    .bg {
+        overflow: hidden;
+    }
     .bg .slide h1::after,
     .bg .slide h1::before {
         content: "";
