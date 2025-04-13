@@ -1,17 +1,19 @@
 <script lang="ts">
     interface ButtonProps {
-        href: string;
         content: string;
-        className?: string;
+        onClick?: () => void;
     }
-    let { href, content }: ButtonProps = $props();
+    let { content, onClick }: ButtonProps = $props();
 </script>
 
-<div class="generic-btn items-center tracking-[1px] max-[1200px]:hidden">
-    <a {href}>
+<button
+    class="generic-btn w-full h-full cursor-pointer items-center tracking-[1px]"
+    onclick={onClick}
+>
+    <span>
         {content}
-    </a>
-</div>
+    </span>
+</button>
 
 <style>
     .generic-btn {
