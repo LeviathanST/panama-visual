@@ -11,7 +11,6 @@
     let selectedCategory = $state(get(readCurrentCategory));
     let { isOpen } = $props();
     function chooseCategory(event: MouseEvent, category: number) {
-        event.preventDefault();
         selectedCategory = category;
         writeCurrentCategory.set(selectedCategory);
     }
@@ -46,7 +45,7 @@
                         item.id
                             ? 'active'
                             : ''}"
-                        href="portfolio"
+                        href="/portfolio"
                         onclick={(e) => chooseCategory(e, item.id)}
                     >
                         <div
