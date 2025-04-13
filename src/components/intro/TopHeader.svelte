@@ -4,21 +4,28 @@
     import Button from "../common/Button.svelte";
     import { translate } from "../../stores/language";
 
+    let { toggleMenu } = $props();
+
     const currentPage: String = page.url.pathname;
-    let isVisible = true;
+    let isVisible: Boolean | undefined = $state();
+    let contactSection: HTMLElement | null;
+
     onMount(() => {
-        let previousScrollY = window.scrollY;
+        contactSection = document.getElementById("about-contact");
+        let inner = document.getElementById("app-inner");
+        isVisible = inner?.scrollTop <= 0;
+
         const handleScroll = () => {
-            const scrollPosition = window.scrollY;
-            isVisible =
-                scrollPosition < 100 || scrollPosition < previousScrollY;
-            previousScrollY = scrollPosition;
+            isVisible = inner?.scrollTop <= 0;
         };
-        window.addEventListener("scroll", handleScroll);
+        window.addEventListener("scroll", handleScroll, true);
         return () => {
             window.removeEventListener("scroll", handleScroll);
         };
     });
+    const scrollToContact = () => {
+        contactSection?.scrollIntoView({ behavior: "smooth" });
+    };
 </script>
 
 <div
@@ -39,7 +46,10 @@
             ? 'min-[1200px]:h-[185px] min-[1200px]:py-[58px] min-[768px]:h-[104px] min-[768px]:py-[30px] py-[10px]'
             : 'min-[1200px]:h-[61px] min-[768px]:h-[60px] py-[10px]'}"
     >
-        <div class="hamburger-menu min-[1200px]:hidden">
+        <div
+            class="hamburger-menu min-[1200px]:hidden cursor-pointer"
+            onclick={toggleMenu}
+        >
             <img
                 class="h-[12px] w-auto"
                 src="/images/mobile_ico_menu.png"
@@ -59,7 +69,10 @@
                 />
             </a>
         </div>
-        <div class="contact-icon min-[1200px]:hidden">
+        <div
+            class="contact-icon min-[1200px]:hidden cursor-pointer"
+            onclick={scrollToContact}
+        >
             <img
                 class="h-[16px] w-auto"
                 src="/images/mobile_ico_contact.png"
@@ -79,7 +92,9 @@
                 <a href="/portfolio">{translate("OUR_PORTFOLIO")}</a>
             </h3>
         </div>
-        <Button href="contact" content={translate("CONTACT")} />
+        <div class="max-[1200px]:hidden">
+            <Button content={translate("CONTACT")} onClick={scrollToContact} />
+        </div>
     </div>
 </div>
 
