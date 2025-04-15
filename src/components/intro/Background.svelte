@@ -89,7 +89,7 @@
     </div>
     <div
         class="mouse absolute pb-[30px] bottom-0 left-[50%] z-4 cursor-pointer
-               max-[1199px]:hidden
+               max-[767px]:hidden
         "
         on:click={scrollToGallery}
     >
