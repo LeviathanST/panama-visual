@@ -25,10 +25,10 @@
             <a href="/">
                 <img src="/images/home-icon.png" alt="home-icon" />
             </a>
-            <a href="/">
+            <a href="https://www.facebook.com/profile.php?id=61550655238112">
                 <img src="/images/facebook-icon.png" alt="facebook-icon" />
             </a>
-            <a href="/">
+            <a href="https://www.facebook.com/profile.php?id=61550655238112">
                 <img src="/images/youtube-icon.png" alt="youtube-icon" />
             </a>
         </div>
