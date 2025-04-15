@@ -3,7 +3,7 @@
     import MenuOuter from "../MenuOuter.svelte";
 </script>
 
-<header id="header" class="banner h-[65vw] max-w-full w-full flex flex-col">
+<header id="header" class="banner h-[85vw] max-w-full w-full flex flex-col">
     <Background />
     <MenuOuter />
 </header>
