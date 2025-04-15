@@ -4,11 +4,16 @@
 
 <div
     id="footer"
-    class="w-full bg-[#121214] min-[1200px]:h-[101px] min-[768px]:h-[141px] max-[767px]:h-[161px]"
+    class="w-full bg-[#121214] min-[1200px]:h-[101px] max-[767px]:h-[161px]
+        py-[23px]
+        min-[1200px]:px-[60px] min-[768px]:px-[30px] px-[15px]
+    "
 >
     <div
-        class="inner w-full flex items-center justify-between px-[60px] py-[23px]
-        max-[767px]:grid max-[767px]:grid-cols-2 max-[767px]:grid-rows-[auto_auto] max-[767px]:gap-y-4"
+        class="inner w-full flex items-center justify-between
+        max-[767px]:grid max-[767px]:grid-cols-2 max-[767px]:grid-rows-[auto_auto] max-[767px]:gap-y-4
+        min-[768px]:h-[55px] min-[575px]:h-[95px] h-[115px]
+        "
     >
         <div
             class="logo h-[52.0667px] w-[103px] max-[767px]:row-start-1 max-[767px]:col-start-1"
