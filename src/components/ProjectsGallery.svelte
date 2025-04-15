@@ -109,7 +109,9 @@
                         alt={project.title}
                     />
                     <div
-                        class="info transition-all duration-300 px-[60px] pb-[50px] w-full bottom-0 left-0 z-1 absolute"
+                        class="info transition-all duration-300 w-full bottom-0 left-0 z-1 absolute
+                        min-[1200px]:pb-[50px] min-[768px]:pb-[35px] pb-[35px]
+                        min-[1200px]:px-[60px] px-[20px]"
                     >
                         <div class="cate text-[#f60] font-[500] text-[18px]">
                             {translate(
