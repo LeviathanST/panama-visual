@@ -1,16 +1,9 @@
 <script lang="ts">
     import { onMount } from "svelte";
+    import { itemReader as sponsorReader } from "$lib/stores/sponsor";
+    import { get } from "svelte/store";
 
-    const sponsors = [
-        { id: 1, src: "/images/sponsors/abbive.png", alt: "Sponsor 1" },
-        { id: 2, src: "/images/sponsors/euromina.png", alt: "Sponsor 2" },
-        { id: 3, src: "/images/sponsors/s7.png", alt: "Sponsor 3" },
-        { id: 4, src: "/images/sponsors/kimlongnam.png", alt: "Sponsor 4" },
-        { id: 5, src: "/images/sponsors/kanifa.png", alt: "Sponsor 5" },
-        { id: 6, src: "/images/sponsors/hoasen.png", alt: "Sponsor 6" },
-        { id: 7, src: "/images/sponsors/huawei.png", alt: "Sponsor 7" },
-        { id: 8, src: "/images/sponsors/heineken.png", alt: "Sponsor 8" },
-    ];
+    const sponsors = get(sponsorReader);
 
     let allSponsors = [...sponsors, ...sponsors];
     let currentIndex = 0;
