@@ -1,33 +1,36 @@
 <script lang="ts">
-    import "../../app.css";
-    import * as SideBar from "$lib/components/ui/sidebar/index";
-    import AppSideBar from "$lib/components/custom/edit/Sidebar.svelte";
+    import * as Sidebar from "$lib/components/ui/sidebar/index.js";
+    import AppSidebar from "$lib/components/custom/edit/Sidebar.svelte";
     import ProjectGalleryEdit from "$lib/components/custom/edit/ProjectGalleryEdit.svelte";
-    import { selectedItem } from "$lib/stores/edit";
     import AboutContactEdit from "$lib/components/custom/edit/AboutContactEdit.svelte";
-    import SponsorsGrid from "$lib/components/custom/edit/SponsorEdit.svelte"; // New component
+    import SponsorsEdit from "$lib/components/custom/edit/SponsorEdit.svelte";
     import AddressEdit from "$lib/components/custom/edit/AddressEdit.svelte";
+    import { selectedItem } from "$lib/stores/edit";
 
     let { children } = $props();
-
-    type Component = typeof ProjectGalleryEdit;
-    const contentMap: Record<string, Component> = {
+    const contentMap: Record<string, any> = {
         "Project Gallery": ProjectGalleryEdit,
         "About Contact": AboutContactEdit,
-        Sponsors: SponsorsGrid,
+        Sponsor: SponsorsEdit,
         Address: AddressEdit,
     };
 </script>
 
-<SideBar.Provider>
-    <AppSideBar />
-    <main>
-        <SideBar.Trigger />
-        {#if $selectedItem && $selectedItem in contentMap}
-            <svelte:component this={contentMap[$selectedItem]} />
-        {:else}
-            <div class="p-4">Select an item from the sidebar</div>
-        {/if}
-        {@render children()}
+<Sidebar.Provider>
+    <AppSidebar />
+    <main class="flex min-h-screen w-full pl-0">
+        <Sidebar.Trigger class="mb-4" />
+        <div class="flex flex-col flex-1 items-center justify-center">
+            {#if $selectedItem && $selectedItem in contentMap}
+                <div class="w-full max-w-4xl">
+                    <svelte:component this={contentMap[$selectedItem]} />
+                </div>
+            {:else}
+                <div class="p-4 text-center text-muted-foreground">
+                    Select an item from the sidebar
+                </div>
+            {/if}
+            {@render children()}
+        </div>
     </main>
-</SideBar.Provider>
+</Sidebar.Provider>

@@ -1,3 +1,3 @@
 import { writable } from 'svelte/store';
 
-export const selectedItem = writable<string>("Home");
+export const selectedItem = writable<string>("Project Gallery");
