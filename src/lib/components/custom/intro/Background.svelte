@@ -1,7 +1,7 @@
 <script lang="ts">
     import { circIn } from "svelte/easing";
     import { fade } from "svelte/transition";
-    import { translate } from "../../stores/language";
+    import { translate } from "$lib/stores/language";
     import { onMount } from "svelte";
     let isLoaded = false;
     let menuOuter: HTMLElement | null;

@@ -1,8 +1,8 @@
 <script lang="ts">
     import { fade } from "svelte/transition";
-    import { translate } from "../stores/language";
-    import { projectStore } from "../stores/project";
-    import { categoryStore, readCurrentCategory } from "../stores/category";
+    import { translate } from "$lib/stores/language";
+    import { projectStore } from "$lib/stores/project";
+    import { categoryStore, readCurrentCategory } from "$lib/stores/category";
     import { get } from "svelte/store";
     import Button from "./common/Button.svelte";
     import { onMount, onDestroy } from "svelte";

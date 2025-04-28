@@ -1,7 +1,7 @@
 <script lang="ts">
     import { get } from "svelte/store";
-    import { translate } from "../stores/language";
-    import { categoryStore, writeCurrentCategory } from "../stores/category";
+    import { translate } from "$lib/stores/language";
+    import { categoryStore, writeCurrentCategory } from "$lib/stores/category";
 
     let selectedCategory = 1;
     let currentIndex = 0;

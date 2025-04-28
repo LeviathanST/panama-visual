@@ -1,5 +1,5 @@
 <script>
-    import { translate } from "../stores/language";
+    import { translate } from "$lib/stores/language";
 </script>
 
 <div

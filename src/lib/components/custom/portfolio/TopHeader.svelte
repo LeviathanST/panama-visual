@@ -2,7 +2,7 @@
     import { page } from "$app/state";
     import { onMount } from "svelte";
     import Button from "../common/Button.svelte";
-    import { translate } from "../../stores/language";
+    import { translate } from "$lib/stores/language";
 
     const currentPage: String = page.url.pathname;
     let { toggleMenu } = $props();

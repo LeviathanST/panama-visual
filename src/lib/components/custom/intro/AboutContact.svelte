@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { translate } from "../../stores/language";
+    import { translate } from "$lib/stores/language";
     import Button from "../common/Button.svelte";
 
     let aboutActive = true;

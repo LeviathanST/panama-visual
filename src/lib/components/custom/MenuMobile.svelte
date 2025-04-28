@@ -1,11 +1,11 @@
 <script lang="ts">
     import { get } from "svelte/store";
-    import { translate } from "../stores/language";
+    import { translate } from "$lib/stores/language";
     import {
         categoryStore,
         readCurrentCategory,
         writeCurrentCategory,
-    } from "../stores/category";
+    } from "$lib/stores/category";
 
     let categories = get(categoryStore);
     let selectedCategory = $state(get(readCurrentCategory));

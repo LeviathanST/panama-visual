@@ -1,5 +1,5 @@
 <script>
-    import { translate } from "../../stores/language";
+    import { translate } from "$lib/stores/language";
 </script>
 
 <div id="about-contact" class=" bg-[#1f2022] w-full min-[768px]:h-[875.967px]">
