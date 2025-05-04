@@ -124,7 +124,9 @@
                         min-[1200px]:pb-[50px] min-[768px]:pb-[35px] pb-[35px]
                         min-[1200px]:px-[60px] px-[20px]"
                     >
-                        <div class="cate text-[#f60] font-[500] text-[18px]">
+                        <div
+                            class="cate text-[var(--general-color)] font-[500] text-[18px]"
+                        >
                             {translate(
                                 categories.find(
                                     (category) =>
@@ -252,7 +254,8 @@
         display: none;
         width: 100px;
         height: 80px;
-        background: url("/images/products_ico_play.png") 50% no-repeat #fe6501;
+        background: url("/images/products_ico_play.png") 50% no-repeat
+            var(--general-color);
         margin-top: 25px;
     }
 
@@ -287,7 +290,7 @@
         }
 
         #list-video .item:hover::before {
-            background: #f60;
+            background: var(--general-color);
         }
 
         .lv-big {

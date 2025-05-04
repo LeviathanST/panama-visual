@@ -30,7 +30,7 @@
                             ><th class="text-left">Mr. Vỹ</th>
                             <td
                                 ><a
-                                    class="transition-all duration-300 text-[#f60] hover:text-white"
+                                    class="transition-all duration-300 text-[var(--general-color)] hover:text-white"
                                     href="tel:0987833310">0987 833 310</a
                                 ></td
                             ></tr
@@ -64,7 +64,7 @@
                             ><th class="text-left">Mr. Vỹ</th>
                             <td
                                 ><a
-                                    class="transition-all duration-300 text-[#f60] hover:text-white"
+                                    class="transition-all duration-300 text-[var(--general-color)] hover:text-white"
                                     href="tel:0987833310">0987 833 310</a
                                 ></td
                             ></tr
@@ -72,7 +72,7 @@
                             ><th class="text-left">Facebook</th>
                             <td
                                 ><a
-                                    class="transition-all duration-300 text-[#f60] hover:text-white"
+                                    class="transition-all duration-300 text-[var(--general-color)] hover:text-white"
                                     href="https://www.facebook.com/eclipsstudio"
                                     >ECLIPS STUDIOS</a
                                 ></td

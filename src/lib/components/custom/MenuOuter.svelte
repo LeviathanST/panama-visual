@@ -188,7 +188,7 @@
         border-top: 8px solid transparent;
     }
     .menu .menu-item a:hover {
-        border-top-color: #f60;
+        border-top-color: var(--general-color);
     }
     .menu .menu-item a:hover .normal {
         opacity: 0;
@@ -200,7 +200,7 @@
         color: #fff;
     }
     .menu .menu-item a.active {
-        border-top-color: #f60;
+        border-top-color: var(--general-color);
     }
     .menu .menu-item a.active .normal {
         opacity: 0;

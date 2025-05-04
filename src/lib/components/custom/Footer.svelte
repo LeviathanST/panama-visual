@@ -12,15 +12,15 @@
     <div
         class="inner w-full flex items-center justify-between
         max-[767px]:grid max-[767px]:grid-cols-2 max-[767px]:grid-rows-[auto_auto] max-[767px]:gap-y-4
-        min-[768px]:h-[55px] min-[575px]:h-[95px] h-[115px]
+        min-[768px]:h-[60px] min-[575px]:h-[95px] h-[115px]
         "
     >
         <div
-            class="logo h-[52.0667px] w-[103px] max-[767px]:row-start-1 max-[767px]:col-start-1"
+            class="logo h-[60px] w-[103px] max-[767px]:row-start-1 max-[767px]:col-start-1"
         >
             <a href="https://eclipspictures.com">
                 <img
-                    src="/images/header_img_logo.png"
+                    src="/images/logo.png"
                     alt="logo"
                     class="h-full w-full object-contain"
                 />

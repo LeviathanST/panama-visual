@@ -33,7 +33,7 @@
             </a>
         </div>
         <div
-            class="title py-[9px] text-center text-[500] text-[16px] text-[#f60] bg-[hsla(0,0%,100%,.03)] tracking-[1px]"
+            class="title py-[9px] text-center text-[500] text-[16px] text-[var(--general-color)] bg-[hsla(0,0%,100%,.03)] tracking-[1px]"
         >
             {translate("OUR_PORTFOLIO")}
         </div>
@@ -76,7 +76,7 @@
             {/each}
         </div>
         <div
-            class="title py-[9px] text-center text-[500] text-[16px] text-[#f60] bg-[hsla(0,0%,100%,.03)] tracking-[1px]"
+            class="title py-[9px] text-center text-[500] text-[16px] text-[var(--general-color)] bg-[hsla(0,0%,100%,.03)] tracking-[1px]"
         >
             ECLIPS PICTURES
         </div>
@@ -105,7 +105,7 @@
     }
 
     .slidebar .social a:hover {
-        border-color: #f60;
+        border-color: var(--general-color);
     }
 
     .slidebar .social a img {

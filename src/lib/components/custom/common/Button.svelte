@@ -18,7 +18,7 @@
 <style>
     .generic-btn {
         color: #fff;
-        border: 2px solid #f60;
+        border: 2px solid var(--general-color);
         padding: 7px 58px 7px 25px;
         font-size: 16px;
         font-weight: 400;
@@ -27,7 +27,7 @@
         transition: all 0.3s;
     }
     .generic-btn:hover {
-        background-color: #f60;
+        background-color: var(--general-color);
         background-image: url("/images/icon/hover_arrow_btn.png");
     }
 </style>

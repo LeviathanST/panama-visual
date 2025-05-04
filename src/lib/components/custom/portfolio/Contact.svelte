@@ -13,7 +13,7 @@
                 min-[768px]:pt-[110px]
                 min-[768px]:mb-[45px]
                 min-[768px]:border-b-[8px]
-                max-[767px]:text-[#fe6501]"
+                max-[767px]:text-[var(--general-color)]"
             >
                 {translate("CONTACT_US")}
             </div>
@@ -83,17 +83,17 @@
     }
     @media only screen and (min-width: 768px) {
         .contact form .button:hover {
-            color: #fe6501;
-            border-color: #fe6501;
+            color: var(--general-color);
+            border-color: var(--general-color);
         }
         .title:hover {
-            border-color: #fe6501;
+            border-color: var(--general-color);
             color: #fff;
         }
         .ac-tab.active .title,
         .ac-tab.active .title {
             color: white;
-            border-bottom-color: #fe6501;
+            border-bottom-color: var(--general-color);
         }
         .ac-tab.active .content {
             display: flex;

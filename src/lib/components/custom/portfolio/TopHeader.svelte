@@ -30,8 +30,8 @@
 <div
     class="top-header bg-[#1f2022] z-40 fixed w-full flex items-center
             {isVisible
-        ? 'min-[1200px]:h-[96px] min-[768px]:h-[64px] h-[60px]'
-        : 'min-[1200px]:h-[64px] h-[60px]'}
+        ? 'min-[1200px]:h-[102px] min-[768px]:h-[70px] h-[66px]'
+        : 'min-[1200px]:h-[70px] h-[66px]'}
             "
     class:default={isVisible}
 >
@@ -42,8 +42,8 @@
                max-[768px]:px-[10px]
 
                {isVisible
-            ? 'min-[1200px]:h-[96px] min-[1200px]:py-[26px] min-[768px]:h-[44px] min-[768px]:h-[40px] py-[10px]'
-            : 'min-[1200px]:h-[60px] max-[1199px]:h-[40px] py-[10px]'}"
+            ? 'min-[1200px]:h-[92px] min-[1200px]:py-[26px] min-[768px]:h-[55px] min-[768px]:h-[40px] py-[10px]'
+            : 'min-[1200px]:h-[60px] max-[1199px]:h-[55px] py-[10px]'}"
     >
         <div
             class="hamburger-menu min-[1200px]:hidden cursor-pointer"
@@ -55,15 +55,15 @@
                 alt="menu-icon"
             />
         </div>
-        <div class="logo min-[1200px]:w-[308px] min-[768px]:w-[87.5px]">
+        <div class="logo min-[1200px]:w-[164px] min-[768px]:w-[87.5px]">
             <a href="/">
                 <img
                     class="transition-all duration-300
                         {isVisible
-                        ? 'min-[768px]:max-h-[44px] max-h-[40px]'
-                        : 'max-h-[40px]'}
+                        ? 'min-[768px]:max-h-[73px] max-h-[55px]'
+                        : 'max-h-[55px]'}
                         "
-                    src="/images/header_img_logo.png"
+                    src="/images/logo.png"
                     alt="logo"
                 />
             </a>
@@ -99,12 +99,12 @@
 
 <style>
     .top-header.default {
-        border-top: 5px solid #f60;
+        border-top: 5px solid var(--general-color);
         border-bottom: 1px solid transparent;
         transition: all 0.3s;
     }
     .top-header:not(.default) {
-        border-top: 5px solid #f60;
+        border-top: 5px solid var(--general-color);
         border-bottom: 1px solid #2c2c2e;
         transition: all 0.3s;
     }
@@ -123,7 +123,7 @@
         content: "";
         width: 5px;
         height: 5px;
-        background: #f60;
+        background: var(--general-color);
         position: absolute;
         top: -2px;
         left: 0; /* Default position */

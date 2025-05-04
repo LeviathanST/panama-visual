@@ -59,7 +59,7 @@
                 >{translate("SIMPLICITY_IS")}</span
             >
             <strong
-                class=" text-[#f60] tracking-[1px] text-center w-full
+                class=" text-[var(--general-color)] tracking-[1px] text-center w-full
                 min-[1200px]:leading-[66px]
                 min-[1200px]:h-[66px]
                 min-[1200px]:text-[60px]
@@ -114,7 +114,7 @@
         z-index: 1;
         width: 35px;
         height: 2px;
-        background: #f60;
+        background: var(--general-color);
     }
     .bg .slide h1::after {
         bottom: 0;
@@ -139,7 +139,7 @@
         content: "";
         width: 4px;
         height: 4px;
-        background: #f60;
+        background: var(--general-color);
         display: inline-block;
         transform: rotate(45deg);
         margin-right: 8px;

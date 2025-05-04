@@ -31,8 +31,8 @@
 <div
     class="top-header bg-transparent z-40 fixed w-full
             {isVisible
-        ? 'min-[1200px]:h-[191px] min-[768px]:h-[104px] h-[61px]'
-        : 'min-[1200px]:h-[66.85px] h-[64px]'}
+        ? 'min-[1200px]:h-[191px] min-[768px]:h-[108px] h-[66px]'
+        : 'min-[1200px]:h-[70.85px] h-[68px]'}
             "
     class:default={isVisible}
 >
@@ -43,8 +43,8 @@
                max-[768px]:px-[10px]
 
                {isVisible
-            ? 'min-[1200px]:h-[185px] min-[1200px]:py-[58px] min-[768px]:h-[104px] min-[768px]:py-[30px] py-[10px]'
-            : 'min-[1200px]:h-[61px] min-[768px]:h-[60px] py-[10px]'}"
+            ? 'min-[1200px]:h-[191px] min-[1200px]:py-[58px] min-[768px]:h-[104px] min-[768px]:py-[30px] py-[10px]'
+            : 'min-[1200px]:h-[66px] min-[768px]:h-[60px] py-[5px]'}"
     >
         <div
             class="hamburger-menu min-[1200px]:hidden cursor-pointer"
@@ -61,10 +61,10 @@
                 <img
                     class="transition-all duration-300
                         {isVisible
-                        ? 'min-[1200px]:max-h-[69px] min-[768px]:max-h-[44px] max-h-[40px]'
-                        : 'max-h-[40px]'}
+                        ? 'min-[1200px]:max-h-[73px] min-[768px]:max-h-[48px] max-h-[55px]'
+                        : 'max-h-[55px]'}
                         "
-                    src="/images/header_img_logo.png"
+                    src="/images/logo.png"
                     alt="logo"
                 />
             </a>
@@ -100,12 +100,12 @@
 
 <style>
     .top-header.default {
-        border-top: 5px solid #f60;
+        border-top: 5px solid var(--general-color);
         border-bottom: 1px solid transparent;
         transition: all 0.3s;
     }
     .top-header:not(.default) {
-        border-top: 5px solid #f60;
+        border-top: 5px solid var(--general-color);
         border-bottom: 1px solid #2c2c2e;
         background-color: #1f2022;
         transition: all 0.3s;
@@ -125,7 +125,7 @@
         content: "";
         width: 5px;
         height: 5px;
-        background: #f60;
+        background: var(--general-color);
         position: absolute;
         top: -2px;
         left: 0; /* Default position */
