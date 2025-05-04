@@ -22,9 +22,9 @@ export function translate(key: keyof typeof mappingObject) {
 
 let mappingObject = {
     // Header content
-    'ECLIPS_PICTURES': {
-        'en': 'ECLIPS PICTURES',
-        'vi': 'ECLIPS PICTURES'
+    'PANAMA_VISUAL': {
+        'en': 'PANAMA VISUAL',
+        'vi': 'PANAMA VISUAL'
     },
     'OUR_PORTFOLIO': {
         'en': 'OUR PORTFOLIO',
@@ -44,31 +44,22 @@ let mappingObject = {
     },
 
     // Menu categories
-    'VISUALS_VJ': {
-        'en': 'Visuals/VJ',
-        'vi': 'Visuals/VJ'
+    'VISUAL_STAGE': {
+        'en': 'Visuals Stage',
+        'vi': 'Sân khấu thị giác'
     },
-    'AFTERMV': {
-        'en': 'AfterMV',
-        'vi': 'AfterMV'
+    'INTERACT_DANCE': {
+        'en': 'Interact Dance',
+        'vi': 'Khiêu vũ tương tác'
     },
-    'TVC_VIRAL': {
-        'en': 'TVC/Viral',
-        'vi': 'TVC/Viral'
+    'HOLOGRAM': {
+        'en': 'Hologram',
+        'vi': 'Ảnh ba chiều'
     },
-    'ECLIPS_STUDIO': {
-        'en': 'Eclips Studio',
-        'vi': 'Eclips Studio'
+    '3D_MAPPING': {
+        'en': '3D Mapping',
+        'vi': 'Ánh xạ 3D'
     },
-    'PHOTOS': {
-        'en': 'Photos',
-        'vi': 'Hình ảnh'
-    },
-    'OTHERS': {
-        'en': 'Others',
-        'vi': 'Khác'
-    },
-
     // About section
     'ABOUT_US': {
         'en': 'ABOUT US',
@@ -91,8 +82,8 @@ let mappingObject = {
         'vi': 'TÌM HIỂU THÊM'
     },
     'ADDRESS_1': {
-        'en': 'No. 35/91/378 Thuy Khue - Tay Ho District - Hanoi',
-        'vi': 'Số 35/91/378 Thụy Khuê - Q.Tây Hồ - Hà Nội'
+        'en': 'No. 188 Thang Long, Hai Chau, Da Nang',
+        'vi': 'Số 188 Thăng Long, Hải Châu, Đà Nẵng'
     },
     'ADDRESS_2': {
         'en': 'No. 35/91/378 Thuy Khue - Tay Ho District - Hanoi',
