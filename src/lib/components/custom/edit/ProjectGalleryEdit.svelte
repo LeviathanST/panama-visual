@@ -1,14 +1,26 @@
 <script lang="ts">
+    import { Button } from "$lib/components/ui/button";
+    import {
+        Card,
+        CardContent,
+        CardDescription,
+        CardHeader,
+        CardTitle,
+    } from "$lib/components/ui/card";
+    import { Input } from "$lib/components/ui/input";
+    import { Textarea } from "$lib/components/ui/textarea";
+    import { Badge } from "$lib/components/ui/badge";
+    import { Alert, AlertDescription } from "$lib/components/ui/alert";
+    import { cn } from "$lib/utils";
     import {
         projectStore,
         addProject,
         updateProject,
         deleteProject,
     } from "$lib/stores/project";
-    import * as Card from "$lib/components/ui/card";
-    import * as Input from "$lib/components/ui/input";
-    import * as Button from "$lib/components/ui/button";
-    import { cn } from "$lib/utils";
+    import { fade } from "svelte/transition";
+    import { get } from "svelte/store";
+    import { onMount } from "svelte";
 
     type Project = {
         id: number;
@@ -40,8 +52,24 @@
     let selectedType: "image" | "video" | null = null;
     let searchQuery = "";
 
+    // Category options for buttons and form
+    const categoryOptions = [
+        { value: 1, label: "Visuals/VJ" },
+        { value: 2, label: "Aftermovie" },
+        { value: 3, label: "TVC/Viral" },
+        { value: 4, label: "Eclips Studio" },
+        { value: 5, label: "Photos" },
+        { value: 6, label: "Others" },
+    ];
+
+    // Type options for buttons and form
+    const typeOptions = [
+        { value: "image", label: "Image" },
+        { value: "video", label: "Video" },
+    ];
+
     // Filtered projects
-    $: filteredProjects = $projectStore.filter((project) => {
+    $: filteredProjects = get(projectStore).filter((project) => {
         const matchesCategory =
             selectedCategory === null || project.category === selectedCategory;
         const matchesType =
@@ -60,22 +88,6 @@
         return matchesCategory && matchesType && matchesSearch;
     });
 
-    // Category options for buttons and form
-    const categoryOptions = [
-        { value: 1, label: "Visuals/VJ" },
-        { value: 2, label: "Aftermovie" },
-        { value: 3, label: "TVC/Viral" },
-        { value: 4, label: "Eclips Studio" },
-        { value: 5, label: "Photos" },
-        { value: 6, label: "Others" },
-    ];
-
-    // Type options for buttons and form
-    const typeOptions = [
-        { value: "image", label: "Image" },
-        { value: "video", label: "Video" },
-    ];
-
     function validateForm(): Errors {
         const newErrors: Errors = {};
         if (!title) newErrors.title = "Title is required";
@@ -89,10 +101,7 @@
 
     function handleSubmit() {
         errors = validateForm();
-        if (Object.keys(errors).length > 0) {
-            console.error("Validation errors:", errors);
-            return;
-        }
+        if (Object.keys(errors).length > 0) return;
 
         try {
             const projectData: Omit<Project, "id"> = {
@@ -114,14 +123,7 @@
             }
 
             // Reset form
-            title = "";
-            category = 1;
-            image = "";
-            time = "";
-            youtubeId = "";
-            description = "";
-            type = "video";
-            editingId = null;
+            handleReset();
             setTimeout(() => (successMessage = ""), 3000);
         } catch (error) {
             console.error("Error:", error);
@@ -133,7 +135,7 @@
         editingId = project.id;
         title = project.title;
         category = project.category;
-        image = project.image.replace("/images/xlarge/", ""); // Strip prefix for input
+        image = project.image.replace("images/xlarge/", "");
         time = project.time || "";
         youtubeId = project.youtubeId || "";
         description = project.description || "";
@@ -158,7 +160,6 @@
         type = "video";
         editingId = null;
         errors = {};
-        successMessage = "";
     }
 
     function setCategory(value: number | null) {
@@ -182,374 +183,423 @@
             errors.youtubeId = "";
         }
     }
+    let edit: HTMLElement | null;
+    onMount(() => {
+        edit = document.getElementById("edit-area");
+    });
+    const scrollToEdit = () => {
+        edit?.scrollIntoView({ behavior: "smooth" });
+    };
 </script>
 
-<Card.Root class="w-full max-w-4xl mx-auto">
-    <Card.Header>
-        <Card.Title>Manage Projects</Card.Title>
-        <Card.Description
-            >Add, edit, or delete studio projects.</Card.Description
-        >
-    </Card.Header>
-    <Card.Content>
-        {#if successMessage}
-            <div class="text-green-500 text-sm mb-4 text-center">
-                {successMessage}
-            </div>
-        {/if}
-        {#if errors.general}
-            <div class="text-red-500 text-sm mb-4 text-center">
-                {errors.general}
-            </div>
-        {/if}
+<div class="container mx-auto py-8 px-4">
+    <Card class="w-full max-w-5xl mx-auto shadow-lg">
+        <CardHeader>
+            <CardTitle class="text-2xl font-bold">Project Manager</CardTitle>
+            <CardDescription
+                >Add, edit, or delete studio projects</CardDescription
+            >
+        </CardHeader>
 
-        <!-- Form and Preview -->
-        <div
-            class="grid gap-4 mb-6 {editingId
-                ? 'md:grid-cols-2'
-                : 'md:grid-cols-1'}"
-        >
-            <!-- Form -->
-            <div>
-                <form
-                    id="project-form"
-                    class="grid gap-4"
-                    on:submit|preventDefault={handleSubmit}
-                >
-                    <div class="grid gap-2">
-                        <label for="title" class="text-sm font-medium"
-                            >Title</label
-                        >
-                        <Input.Input
-                            id="title"
-                            name="title"
-                            type="text"
-                            bind:value={title}
-                            placeholder="Enter project title"
-                            class={cn(
-                                "w-full",
-                                errors.title && "border-red-500",
-                            )}
-                        />
-                        {#if errors.title}
-                            <p class="text-red-500 text-sm">{errors.title}</p>
-                        {/if}
-                    </div>
-                    <div class="grid gap-2">
-                        <label for="category" class="text-sm font-medium"
-                            >Category</label
-                        >
-                        <div class="flex flex-wrap gap-2">
-                            {#each categoryOptions as option}
-                                <Button.Button
-                                    onclick={() =>
-                                        setFormCategory(option.value)}
-                                    variant={category === option.value
-                                        ? "default"
-                                        : "outline"}
-                                    class={cn(
-                                        "cursor-pointer",
-                                        errors.category && "border-red-500",
-                                    )}
-                                >
-                                    {option.label}
-                                </Button.Button>
-                            {/each}
-                        </div>
-                        {#if errors.category}
-                            <p class="text-red-500 text-sm">
-                                {errors.category}
-                            </p>
-                        {/if}
-                    </div>
-                    <div class="grid gap-2">
-                        <label for="type" class="text-sm font-medium"
-                            >Type</label
-                        >
-                        <div class="flex flex-wrap gap-2">
-                            {#each typeOptions as option}
-                                <Button.Button
-                                    onclick={() => setFormType(option.value)}
-                                    variant={type === option.value
-                                        ? "default"
-                                        : "outline"}
-                                    class={cn(
-                                        "cursor-pointer",
-                                        errors.type && "border-red-500",
-                                    )}
-                                >
-                                    {option.label}
-                                </Button.Button>
-                            {/each}
-                        </div>
-                        {#if errors.type}
-                            <p class="text-red-500 text-sm">{errors.type}</p>
-                        {/if}
-                    </div>
-                    <div class="grid gap-2">
-                        <label for="image" class="text-sm font-medium"
-                            >Image Filename</label
-                        >
-                        <Input.Input
-                            id="image"
-                            name="image"
-                            type="text"
-                            bind:value={image}
-                            placeholder="Enter image filename (e.g., xyz.jpeg)"
-                            class={cn(
-                                "w-full",
-                                errors.image && "border-red-500",
-                            )}
-                        />
-                        {#if errors.image}
-                            <p class="text-red-500 text-sm">{errors.image}</p>
-                        {/if}
-                    </div>
-                    <div class="grid gap-2">
-                        <label for="time" class="text-sm font-medium"
-                            >Time (Optional)</label
-                        >
-                        <Input.Input
-                            id="time"
-                            name="time"
-                            type="text"
-                            bind:value={time}
-                            placeholder="Enter time (e.g., 15-03-2025)"
-                            class="w-full"
-                        />
-                    </div>
-                    <div class="grid gap-2">
-                        <label for="youtubeId" class="text-sm font-medium"
-                            >YouTube ID {type === "image"
-                                ? "(Optional)"
-                                : ""}</label
-                        >
-                        <Input.Input
-                            id="youtubeId"
-                            name="youtubeId"
-                            type="text"
-                            bind:value={youtubeId}
-                            placeholder="Enter YouTube video ID"
-                            class={cn(
-                                "w-full",
-                                errors.youtubeId && "border-red-500",
-                            )}
-                            disabled={type === "image"}
-                        />
-                        {#if errors.youtubeId}
-                            <p class="text-red-500 text-sm">
-                                {errors.youtubeId}
-                            </p>
-                        {/if}
-                    </div>
-                    <div class="grid gap-2">
-                        <label for="description" class="text-sm font-medium"
-                            >Description (Optional)</label
-                        >
-                        <textarea
-                            id="description"
-                            name="description"
-                            bind:value={description}
-                            placeholder="Enter project description"
-                            class="w-full min-h-[100px] border rounded-md p-2"
-                        />
-                    </div>
-                    <div class="flex gap-2">
-                        <Button.Button
-                            type="submit"
-                            variant="default"
-                            class="cursor-pointer"
-                        >
-                            {editingId ? "Update" : "Add"} Project
-                        </Button.Button>
-                        <Button.Button
-                            onclick={handleReset}
-                            variant="outline"
-                            class="cursor-pointer"
-                        >
-                            Reset
-                        </Button.Button>
-                    </div>
-                </form>
-            </div>
-
-            <!-- Preview Section -->
-            {#if editingId}
-                <Card.Root>
-                    <Card.Header>
-                        <Card.Title>Preview</Card.Title>
-                        <Card.Description
-                            >Preview how the project will appear.</Card.Description
-                        >
-                    </Card.Header>
-                    <Card.Content>
-                        <div class="p-4">
-                            {#if type === "image"}
-                                <img
-                                    src={`/images/xlarge/${image}`}
-                                    alt={title || "Project Image"}
-                                    class="w-full h-40 object-cover rounded-md mb-2"
-                                />
-                            {:else if type === "video" && youtubeId}
-                                <iframe
-                                    class="w-full h-40 rounded-md mb-2"
-                                    src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
-                                    frameborder="0"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                    allowfullscreen
-                                    title="YouTube Video Preview"
-                                ></iframe>
-                            {:else}
-                                <div
-                                    class="w-full h-40 bg-gray-200 rounded-md mb-2 flex items-center justify-center"
-                                >
-                                    <span class="text-gray-500"
-                                        >No video preview available</span
-                                    >
-                                </div>
-                            {/if}
-                            <h3 class="text-lg font-semibold">
-                                {title || "Untitled Project"}
-                            </h3>
-                            <p class="text-sm text-gray-500">
-                                {categoryOptions.find(
-                                    (opt) => opt.value === category,
-                                )?.label || "Unknown Category"}
-                            </p>
-                            <p class="text-sm">Type: {type}</p>
-                            {#if time}
-                                <p class="text-sm">Time: {time}</p>
-                            {/if}
-                            {#if youtubeId && type === "video"}
-                                <p class="text-sm">YouTube ID: {youtubeId}</p>
-                            {/if}
-                            {#if description}
-                                <p class="text-sm mt-2">{description}</p>
-                            {/if}
-                        </div>
-                    </Card.Content>
-                </Card.Root>
+        <CardContent id="edit-area" class="space-y-8">
+            {#if successMessage}
+                <div transition:fade>
+                    <Alert variant="success" class="mb-6">
+                        <AlertDescription>{successMessage}</AlertDescription>
+                    </Alert>
+                </div>
             {/if}
-        </div>
 
-        <!-- Filters -->
-        <div class="grid gap-4 mb-6 md:grid-cols-3">
-            <div class="grid gap-2">
-                <label for="category-filter" class="text-sm font-medium"
-                    >Filter by Category</label
-                >
-                <div class="flex flex-wrap gap-2">
-                    <Button.Button
-                        onclick={() => setCategory(null)}
-                        variant={selectedCategory === null
-                            ? "default"
-                            : "outline"}
-                        class="cursor-pointer"
-                    >
-                        All Categories
-                    </Button.Button>
-                    {#each categoryOptions as option}
-                        <Button.Button
-                            onclick={() => setCategory(option.value)}
-                            variant={selectedCategory === option.value
-                                ? "default"
-                                : "outline"}
-                            class="cursor-pointer"
-                        >
-                            {option.label}
-                        </Button.Button>
-                    {/each}
+            {#if errors.general}
+                <div transition:fade>
+                    <Alert variant="destructive" class="mb-6">
+                        <AlertDescription>{errors.general}</AlertDescription>
+                    </Alert>
                 </div>
-            </div>
-            <div class="grid gap-2">
-                <label for="type-filter" class="text-sm font-medium"
-                    >Filter by Type</label
-                >
-                <div class="flex flex-wrap gap-2">
-                    <Button.Button
-                        onclick={() => setType(null)}
-                        variant={selectedType === null ? "default" : "outline"}
-                        class="cursor-pointer"
-                    >
-                        All Types
-                    </Button.Button>
-                    {#each typeOptions as option}
-                        <Button.Button
-                            onclick={() => setType(option.value)}
-                            variant={selectedType === option.value
-                                ? "default"
-                                : "outline"}
-                            class="cursor-pointer"
-                        >
-                            {option.label}
-                        </Button.Button>
-                    {/each}
-                </div>
-            </div>
-            <div class="grid gap-2">
-                <label for="search" class="text-sm font-medium"
-                    >Search by Title</label
-                >
-                <Input.Input
-                    id="search"
-                    type="text"
-                    bind:value={searchQuery}
-                    placeholder="Enter regex or title (e.g., Mapping)"
-                    class="w-full"
-                />
-            </div>
-        </div>
+            {/if}
 
-        <!-- Projects Grid -->
-        <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {#each filteredProjects as project}
-                <Card.Root class="relative">
-                    <Card.Content class="p-4">
-                        <img
-                            src="images/xlarge/{project.image}"
-                            alt={project.title}
-                            class="w-full h-40 object-cover rounded-md mb-2"
-                        />
-                        <h3 class="text-lg font-semibold">{project.title}</h3>
-                        <p class="text-sm text-gray-500">
-                            {categoryOptions.find(
-                                (opt) => opt.value === project.category,
-                            )?.label}
-                        </p>
-                        <p class="text-sm">Type: {project.type}</p>
-                        {#if project.time}
-                            <p class="text-sm">Time: {project.time}</p>
-                        {/if}
-                        {#if project.youtubeId}
-                            <p class="text-sm">
-                                YouTube ID: {project.youtubeId}
-                            </p>
-                        {/if}
-                        {#if project.description}
-                            <p class="text-sm mt-2">{project.description}</p>
-                        {/if}
-                        <div class="flex gap-2 mt-4">
-                            <Button.Button
-                                onclick={() => handleEdit(project)}
-                                variant="outline"
-                                class="cursor-pointer"
+            <!-- Form and Preview -->
+            <div
+                class="grid gap-6 {title || image || youtubeId
+                    ? 'md:grid-cols-2'
+                    : 'md:grid-cols-1'}"
+            >
+                <!-- Form -->
+                <div class="space-y-4">
+                    <form
+                        on:submit|preventDefault={handleSubmit}
+                        class="space-y-4"
+                    >
+                        <div class="space-y-2">
+                            <label for="title" class="text-sm font-medium"
+                                >Title</label
                             >
-                                Edit
-                            </Button.Button>
-                            <Button.Button
-                                onclick={() => handleDelete(project.id)}
-                                variant="destructive"
-                                class="cursor-pointer"
-                            >
-                                Delete
-                            </Button.Button>
+                            <Input
+                                id="title"
+                                type="text"
+                                bind:value={title}
+                                placeholder="Enter project title"
+                                class={cn(errors.title && "border-destructive")}
+                            />
+                            {#if errors.title}
+                                <p class="text-destructive text-xs">
+                                    {errors.title}
+                                </p>
+                            {/if}
                         </div>
-                    </Card.Content>
-                </Card.Root>
-            {/each}
-        </div>
-        {#if filteredProjects.length === 0}
-            <p class="text-center text-gray-500 mt-4">No projects found.</p>
-        {/if}
-    </Card.Content>
-</Card.Root>
+
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium">Category</label>
+                            <div class="flex flex-wrap gap-2">
+                                {#each categoryOptions as option}
+                                    <Button
+                                        type="button"
+                                        variant={category === option.value
+                                            ? "default"
+                                            : "outline"}
+                                        size="sm"
+                                        onclick={() =>
+                                            setFormCategory(option.value)}
+                                    >
+                                        {option.label}
+                                    </Button>
+                                {/each}
+                            </div>
+                            {#if errors.category}
+                                <p class="text-destructive text-xs">
+                                    {errors.category}
+                                </p>
+                            {/if}
+                        </div>
+
+                        <div class="space-y-2">
+                            <label class="text-sm font-medium">Type</label>
+                            <div class="flex gap-2">
+                                {#each typeOptions as option}
+                                    <Button
+                                        type="button"
+                                        variant={type === option.value
+                                            ? "default"
+                                            : "outline"}
+                                        size="sm"
+                                        onclick={() =>
+                                            setFormType(option.value)}
+                                    >
+                                        {option.label}
+                                    </Button>
+                                {/each}
+                            </div>
+                            {#if errors.type}
+                                <p class="text-destructive text-xs">
+                                    {errors.type}
+                                </p>
+                            {/if}
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="image" class="text-sm font-medium"
+                                >Image Filename</label
+                            >
+                            <Input
+                                id="image"
+                                type="text"
+                                bind:value={image}
+                                placeholder="Enter image filename (e.g., xyz.jpeg)"
+                                class={cn(errors.image && "border-destructive")}
+                            />
+                            {#if errors.image}
+                                <p class="text-destructive text-xs">
+                                    {errors.image}
+                                </p>
+                            {/if}
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="time" class="text-sm font-medium"
+                                >Time (Optional)</label
+                            >
+                            <Input
+                                id="time"
+                                type="text"
+                                bind:value={time}
+                                placeholder="Enter time (e.g., 15-03-2025)"
+                            />
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="youtubeId" class="text-sm font-medium">
+                                YouTube ID {type === "image"
+                                    ? "(Optional)"
+                                    : ""}
+                            </label>
+                            <Input
+                                id="youtubeId"
+                                type="text"
+                                bind:value={youtubeId}
+                                placeholder="Enter YouTube video ID"
+                                class={cn(
+                                    errors.youtubeId && "border-destructive",
+                                )}
+                                disabled={type === "image"}
+                            />
+                            {#if errors.youtubeId}
+                                <p class="text-destructive text-xs">
+                                    {errors.youtubeId}
+                                </p>
+                            {/if}
+                        </div>
+
+                        <div class="space-y-2">
+                            <label for="description" class="text-sm font-medium"
+                                >Description (Optional)</label
+                            >
+                            <Textarea
+                                id="description"
+                                bind:value={description}
+                                placeholder="Enter project description"
+                                rows={4}
+                            />
+                        </div>
+
+                        <div class="flex gap-3 pt-2">
+                            <Button type="submit"
+                                >{editingId ? "Update" : "Add"} Project</Button
+                            >
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onclick={handleReset}
+                            >
+                                Reset
+                            </Button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Preview -->
+                {#if title || image || youtubeId}
+                    <Card>
+                        <CardHeader>
+                            <CardTitle>Preview</CardTitle>
+                        </CardHeader>
+                        <CardContent>
+                            <div class="space-y-4">
+                                {#if type === "image" && image}
+                                    <div
+                                        class="aspect-video bg-muted rounded-md overflow-hidden"
+                                    >
+                                        <img
+                                            src={`images/xlarge/${image}`}
+                                            alt={title || "Project Image"}
+                                            class="w-full h-full object-cover"
+                                        />
+                                    </div>
+                                {:else if type === "video" && youtubeId}
+                                    <div
+                                        class="aspect-video bg-muted rounded-md overflow-hidden"
+                                    >
+                                        <iframe
+                                            class="w-full h-full"
+                                            src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
+                                            frameborder="0"
+                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                                            allowfullscreen
+                                            title="YouTube Video Preview"
+                                        ></iframe>
+                                    </div>
+                                {:else}
+                                    <div
+                                        class="aspect-video bg-muted rounded-md flex items-center justify-center"
+                                    >
+                                        <span class="text-muted-foreground"
+                                            >No preview available</span
+                                        >
+                                    </div>
+                                {/if}
+
+                                <div>
+                                    <h3 class="text-lg font-semibold">
+                                        {title || "Untitled Project"}
+                                    </h3>
+
+                                    <div class="flex flex-wrap gap-2 mt-2">
+                                        <Badge variant="outline">
+                                            {categoryOptions.find(
+                                                (opt) => opt.value === category,
+                                            )?.label || "Category"}
+                                        </Badge>
+                                        <Badge variant="outline">{type}</Badge>
+                                        {#if time}
+                                            <Badge variant="outline"
+                                                >{time}</Badge
+                                            >
+                                        {/if}
+                                    </div>
+
+                                    {#if description}
+                                        <p
+                                            class="text-sm text-muted-foreground mt-4"
+                                        >
+                                            {description}
+                                        </p>
+                                    {/if}
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                {/if}
+            </div>
+
+            <!-- Filters -->
+            <div class="grid gap-6 md:grid-cols-3">
+                <div class="space-y-2">
+                    <h3 class="text-sm font-medium">Category</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <Button
+                            variant={selectedCategory === null
+                                ? "default"
+                                : "outline"}
+                            size="sm"
+                            onclick={() => setCategory(null)}
+                        >
+                            All
+                        </Button>
+                        {#each categoryOptions as option}
+                            <Button
+                                variant={selectedCategory === option.value
+                                    ? "default"
+                                    : "outline"}
+                                size="sm"
+                                onclick={() => setCategory(option.value)}
+                            >
+                                {option.label}
+                            </Button>
+                        {/each}
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-sm font-medium">Type</h3>
+                    <div class="flex flex-wrap gap-2">
+                        <Button
+                            variant={selectedType === null
+                                ? "default"
+                                : "outline"}
+                            size="sm"
+                            onclick={() => setType(null)}
+                        >
+                            All
+                        </Button>
+                        {#each typeOptions as option}
+                            <Button
+                                variant={selectedType === option.value
+                                    ? "default"
+                                    : "outline"}
+                                size="sm"
+                                onclick={() => setType(option.value)}
+                            >
+                                {option.label}
+                            </Button>
+                        {/each}
+                    </div>
+                </div>
+
+                <div class="space-y-2">
+                    <h3 class="text-sm font-medium">Search</h3>
+                    <Input
+                        type="text"
+                        placeholder="Search by title..."
+                        bind:value={searchQuery}
+                    />
+                </div>
+            </div>
+
+            <!-- Projects Grid -->
+            <div class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                {#each filteredProjects as project (project.id)}
+                    <Card class="overflow-hidden h-full flex flex-col">
+                        <div class="relative aspect-video">
+                            <img
+                                src="images/xlarge/{project.image}"
+                                alt={project.title}
+                                class="w-full h-full object-cover"
+                            />
+                            <Badge class="absolute top-2 right-2"
+                                >{project.type}</Badge
+                            >
+                        </div>
+
+                        <CardContent class="p-4 flex-1 flex flex-col">
+                            <h3 class="text-lg font-semibold line-clamp-1">
+                                {project.title}
+                            </h3>
+
+                            <div class="mt-1 mb-2">
+                                <Badge variant="outline">
+                                    {categoryOptions.find(
+                                        (opt) => opt.value === project.category,
+                                    )?.label}
+                                </Badge>
+                                {#if project.time}
+                                    <span
+                                        class="text-xs text-muted-foreground ml-2"
+                                        >{project.time}</span
+                                    >
+                                {/if}
+                            </div>
+
+                            {#if project.description}
+                                <p
+                                    class="text-sm text-muted-foreground line-clamp-2 mb-4"
+                                >
+                                    {project.description}
+                                </p>
+                            {/if}
+
+                            <div class="flex gap-2 mt-auto">
+                                <Button
+                                    variant="outline"
+                                    size="sm"
+                                    class="flex-1"
+                                    onclick={() => {
+                                        scrollToEdit();
+                                        handleEdit(project);
+                                    }}
+                                >
+                                    Edit
+                                </Button>
+                                <Button
+                                    variant="destructive"
+                                    size="sm"
+                                    class="flex-1"
+                                    onclick={() => handleDelete(project.id)}
+                                >
+                                    Delete
+                                </Button>
+                            </div>
+                        </CardContent>
+                    </Card>
+                {/each}
+
+                {#if filteredProjects.length === 0}
+                    <div class="col-span-full py-12 text-center">
+                        <p class="text-muted-foreground">
+                            No projects found matching your criteria.
+                        </p>
+                        <Button
+                            variant="outline"
+                            class="mt-4"
+                            onclick={() => {
+                                selectedCategory = null;
+                                selectedType = null;
+                                searchQuery = "";
+                            }}
+                        >
+                            Clear filters
+                        </Button>
+                    </div>
+                {/if}
+            </div>
+        </CardContent>
+    </Card>
+</div>
