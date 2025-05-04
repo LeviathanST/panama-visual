@@ -81,7 +81,7 @@
         </div>
         <div class="breadcrumbs max-[1200px]:hidden flex items-center h-[24px]">
             <h3 class:active={currentPage === "/"}>
-                <a href="/">{translate("ECLIPS_PICTURES")}</a>
+                <a href="/">{translate("PANAMA_VISUAL")}</a>
             </h3>
             <div
                 class="icon"

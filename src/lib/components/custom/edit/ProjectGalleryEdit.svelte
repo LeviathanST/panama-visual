@@ -28,7 +28,7 @@
         category: number;
         image: string;
         time?: string;
-        youtubeId?: string;
+        video_link?: string;
         description?: string;
         type: "image" | "video";
     };
@@ -40,7 +40,7 @@
     let category = 1;
     let image = "";
     let time = "";
-    let youtubeId = "";
+    let video_link = "";
     let description = "";
     let type: "image" | "video" = "video";
     let editingId: number | null = null;
@@ -54,12 +54,10 @@
 
     // Category options for buttons and form
     const categoryOptions = [
-        { value: 1, label: "Visuals/VJ" },
-        { value: 2, label: "Aftermovie" },
-        { value: 3, label: "TVC/Viral" },
-        { value: 4, label: "Eclips Studio" },
-        { value: 5, label: "Photos" },
-        { value: 6, label: "Others" },
+        { value: 1, label: "Visuals Stage" },
+        { value: 2, label: "Interact Dance" },
+        { value: 3, label: "Hologram" },
+        { value: 4, label: "3D Mapping" },
     ];
 
     // Type options for buttons and form
@@ -94,8 +92,8 @@
         if (!category) newErrors.category = "Category is required";
         if (!image) newErrors.image = "Image filename is required";
         if (!type) newErrors.type = "Type is required";
-        if (type === "video" && !youtubeId)
-            newErrors.youtubeId = "YouTube ID is required for videos";
+        if (type === "video" && !video_link)
+            newErrors.video_link = "Video URL is required for videos";
         return newErrors;
     }
 
@@ -109,7 +107,7 @@
                 category,
                 image, // Filename only; prefix added in store
                 time: time || undefined,
-                youtubeId: type === "video" ? youtubeId : undefined,
+                video_link: type === "video" ? video_link : undefined,
                 description: description || undefined,
                 type,
             };
@@ -137,7 +135,7 @@
         category = project.category;
         image = project.image.replace("images/xlarge/", "");
         time = project.time || "";
-        youtubeId = project.youtubeId || "";
+        video_link = project.video_link || "";
         description = project.description || "";
         type = project.type;
     }
@@ -155,7 +153,7 @@
         category = 1;
         image = "";
         time = "";
-        youtubeId = "";
+        video_link = "";
         description = "";
         type = "video";
         editingId = null;
@@ -179,7 +177,7 @@
         type = value;
         errors.type = "";
         if (value === "image") {
-            youtubeId = "";
+            video_link = "";
             errors.youtubeId = "";
         }
     }
@@ -220,7 +218,7 @@
 
             <!-- Form and Preview -->
             <div
-                class="grid gap-6 {title || image || youtubeId
+                class="grid gap-6 {title || image || video_link
                     ? 'md:grid-cols-2'
                     : 'md:grid-cols-1'}"
             >
@@ -328,15 +326,13 @@
 
                         <div class="space-y-2">
                             <label for="youtubeId" class="text-sm font-medium">
-                                YouTube ID {type === "image"
-                                    ? "(Optional)"
-                                    : ""}
+                                Video URL {type === "image" ? "(Optional)" : ""}
                             </label>
                             <Input
                                 id="youtubeId"
                                 type="text"
-                                bind:value={youtubeId}
-                                placeholder="Enter YouTube video ID"
+                                bind:value={video_link}
+                                placeholder="Enter video URL"
                                 class={cn(
                                     errors.youtubeId && "border-destructive",
                                 )}
@@ -377,7 +373,7 @@
                 </div>
 
                 <!-- Preview -->
-                {#if title || image || youtubeId}
+                {#if title || image || video_link}
                     <Card>
                         <CardHeader>
                             <CardTitle>Preview</CardTitle>
@@ -394,18 +390,16 @@
                                             class="w-full h-full object-cover"
                                         />
                                     </div>
-                                {:else if type === "video" && youtubeId}
+                                {:else if type === "video" && video_link}
                                     <div
                                         class="aspect-video bg-muted rounded-md overflow-hidden"
                                     >
-                                        <iframe
-                                            class="w-full h-full"
-                                            src={`https://www.youtube-nocookie.com/embed/${youtubeId}`}
-                                            frameborder="0"
-                                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                                            allowfullscreen
-                                            title="YouTube Video Preview"
-                                        ></iframe>
+                                        <video
+                                            class="aspect-video w-full h-auto rounded-lg"
+                                            src={video_link}
+                                            controls
+                                            autoplay
+                                        ></video>
                                     </div>
                                 {:else}
                                     <div

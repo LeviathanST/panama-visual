@@ -19,7 +19,7 @@
                 <p
                     class="text-[24px] tracking-[2px] text-[400] text-white mb-[35px]"
                 >
-                    ECLIPS PICTURES
+                    PANAMA VISUAL
                 </p>
                 <p class="text-[rgba(255,255,255,0.5)] text-[18px] mb-[20px]">
                     {translate("ADDRESS_1")}
@@ -27,11 +27,23 @@
                 <table class="phone text-[18px]">
                     <tbody
                         ><tr
-                            ><th class="text-left">Mr. Vỹ</th>
+                            ><th class="text-left">Phone:</th>
                             <td
                                 ><a
                                     class="transition-all duration-300 text-[var(--general-color)] hover:text-white"
-                                    href="tel:0987833310">0987 833 310</a
+                                    href="tel:0896207092">0896 207 092</a
+                                ></td
+                            ></tr
+                        ></tbody
+                    >
+                    <tbody
+                        ><tr
+                            ><th class="text-left">Email:</th>
+                            <td
+                                ><a
+                                    class="transition-all duration-300 text-[var(--general-color)] hover:text-white"
+                                    href="mailto:Utloc241183@gmail.com"
+                                    >Utloc241183@gmail.com</a
                                 ></td
                             ></tr
                         ></tbody

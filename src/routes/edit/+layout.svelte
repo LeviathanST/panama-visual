@@ -20,7 +20,7 @@
         <Sidebar.Trigger class="mb-4" />
         <div class="flex flex-col flex-1 items-center justify-center">
             {#if $selectedItem && $selectedItem in contentMap}
-                <div class="w-full max-w-4xl">
+                <div class="w-full max-[100%]">
                     <svelte:component this={contentMap[$selectedItem]} />
                 </div>
             {:else}

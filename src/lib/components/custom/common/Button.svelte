@@ -22,12 +22,13 @@
         padding: 7px 58px 7px 25px;
         font-size: 16px;
         font-weight: 400;
-        background: url("/images/icon/ico_arrow_btn.png") right 21px center
+        background: url("/images/icon/arrow-right-solid.svg") right 20px center
             no-repeat;
+        background-size: 23px 23px;
         transition: all 0.3s;
     }
     .generic-btn:hover {
         background-color: var(--general-color);
-        background-image: url("/images/icon/hover_arrow_btn.png");
+        background-image: url("/images/icon/arrow-right-solid-white.svg");
     }
 </style>

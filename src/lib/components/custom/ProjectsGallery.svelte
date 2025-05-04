@@ -10,7 +10,7 @@
     export let autoLoad: boolean = true;
 
     let visibleCount = 5;
-    let videoId: string | null = null;
+    let video_link: string | null = null;
     let zoomedImage: string | null = null;
     const increment = 6;
     const categories = get(categoryStore);
@@ -34,18 +34,22 @@
 
     function handleProjectClick(
         event: MouseEvent,
-        project: { type: "image" | "video"; youtubeId?: string; image: string },
+        project: {
+            type: "image" | "video";
+            video_link?: string;
+            image: string;
+        },
     ) {
         event.preventDefault();
-        if (project.type === "video" && project.youtubeId) {
-            videoId = project.youtubeId;
+        if (project.type === "video" && project.video_link) {
+            video_link = project.video_link;
         } else if (project.type === "image") {
             zoomedImage = "images/xlarge/" + project.image;
         }
     }
 
     function closeVideo() {
-        videoId = null;
+        video_link = null;
     }
 
     function closeImage() {
@@ -170,7 +174,7 @@
         </div>
     {/if}
 
-    {#if videoId}
+    {#if video_link}
         <div
             class="video-modal cursor-pointer fixed inset-0 bg-[#1e1e1e]/90 flex items-center justify-center p-4 sm:p-6 z-50"
             transition:fade={{ duration: 150 }}
@@ -179,14 +183,12 @@
             <div
                 class="video-container cursor-default w-full max-w-[90vw] sm:max-w-[80vw] lg:max-w-4xl relative"
             >
-                <iframe
+                <video
                     class="aspect-video w-full h-auto rounded-lg"
-                    src="https://www.youtube-nocookie.com/embed/{videoId}?autoplay=1&autohide=1&fs=1&rel=0"
-                    frameborder="0"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowfullscreen
-                    title="YouTube Video"
-                ></iframe>
+                    src={video_link}
+                    controls
+                    autoplay
+                ></video>
             </div>
         </div>
     {/if}
