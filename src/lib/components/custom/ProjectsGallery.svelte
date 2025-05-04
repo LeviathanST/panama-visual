@@ -11,6 +11,7 @@
 
     let visibleCount = 5;
     let videoId: string | null = null;
+    let zoomedImage: string | null = null;
     const increment = 6;
     const categories = get(categoryStore);
     $: currentCategory = $readCurrentCategory;
@@ -31,13 +32,24 @@
         visibleCount = Math.min(visibleCount + increment, totalProjects);
     }
 
-    function handlePlayVideo(event: MouseEvent, id?: string) {
+    function handleProjectClick(
+        event: MouseEvent,
+        project: { type: "image" | "video"; youtubeId?: string; image: string },
+    ) {
         event.preventDefault();
-        videoId = id || null;
+        if (project.type === "video" && project.youtubeId) {
+            videoId = project.youtubeId;
+        } else if (project.type === "image") {
+            zoomedImage = "images/xlarge/" + project.image;
+        }
     }
 
     function closeVideo() {
         videoId = null;
+    }
+
+    function closeImage() {
+        zoomedImage = null;
     }
 
     function debounce(fn: () => void, ms: number) {
@@ -99,8 +111,7 @@
             <a
                 class="item project-gallery cursor-pointer min-[1200px]:w-[33.3%] min-[768px]:w-[50%] max-[767px]:w-[100%]"
                 class:lv-big={index < 2}
-                on:click={(e) =>
-                    project.youtubeId && handlePlayVideo(e, project.youtubeId)}
+                onclick={(e) => handleProjectClick(e, project)}
             >
                 <div class="image-wrapper w-full h-full">
                     <img
@@ -129,7 +140,7 @@
                         {#if project.time}
                             <div class="time flex text-white items-center">
                                 <img
-                                    src="images/products_ico_clock.png"
+                                    src="/images/products_ico_clock.png"
                                     alt="Clock"
                                     class="clock-icon"
                                 />
@@ -161,11 +172,10 @@
         <div
             class="video-modal cursor-pointer fixed inset-0 bg-[#1e1e1e]/90 flex items-center justify-center p-4 sm:p-6 z-50"
             transition:fade={{ duration: 150 }}
-            on:click={closeVideo}
+            onclick={closeVideo}
         >
             <div
                 class="video-container cursor-default w-full max-w-[90vw] sm:max-w-[80vw] lg:max-w-4xl relative"
-                on:click|stopPropagation
             >
                 <iframe
                     class="aspect-video w-full h-auto rounded-lg"
@@ -175,6 +185,24 @@
                     allowfullscreen
                     title="YouTube Video"
                 ></iframe>
+            </div>
+        </div>
+    {/if}
+
+    {#if zoomedImage}
+        <div
+            class="image-modal cursor-pointer fixed inset-0 bg-[#1e1e1e]/90 flex items-center justify-center p-4 sm:p-6 z-50"
+            transition:fade={{ duration: 150 }}
+            onclick={closeImage}
+        >
+            <div
+                class="image-container cursor-default w-full max-w-[90vw] max-h-[90vh] relative"
+            >
+                <img
+                    src={zoomedImage}
+                    class="w-full h-full object-contain rounded-lg"
+                    alt="Zoomed Project Image"
+                />
             </div>
         </div>
     {/if}
@@ -227,7 +255,9 @@
         background: url("/images/products_ico_play.png") 50% no-repeat #fe6501;
         margin-top: 25px;
     }
-    .video-container {
+
+    .video-container,
+    .image-container {
         max-width: min(90vw, 960px);
     }
 
@@ -242,6 +272,7 @@
         border: 1px solid #2d2d2f;
         text-align: center;
     }
+
     @media only screen and (min-width: 1200px) {
         #list-video .item:hover .info {
             padding-bottom: 8px;
@@ -258,8 +289,7 @@
         #list-video .item:hover::before {
             background: #f60;
         }
-    }
-    @media only screen and (min-width: 1200px) {
+
         .lv-big {
             width: 50%;
         }
