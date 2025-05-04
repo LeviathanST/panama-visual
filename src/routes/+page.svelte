@@ -1,12 +1,12 @@
 <script lang="ts">
-    import TopHeader from "../components/intro/TopHeader.svelte";
-    import Banner from "../components/intro/Banner.svelte";
-    import ProjectsGallery from "../components/ProjectsGallery.svelte";
-    import Footer from "../components/Footer.svelte";
-    import AboutContact from "../components/intro/AboutContact.svelte";
-    import Partner from "../components/intro/Partner.svelte";
-    import Address from "../components/Address.svelte";
-    import MenuMobile from "../components/MenuMobile.svelte";
+    import TopHeader from "$lib/components/custom/intro/TopHeader.svelte";
+    import Banner from "$lib/components/custom/intro/Banner.svelte";
+    import ProjectsGallery from "$lib/components/custom/ProjectsGallery.svelte";
+    import Footer from "$lib/components/custom/Footer.svelte";
+    import AboutContact from "$lib/components/custom/intro/AboutContact.svelte";
+    import Partner from "$lib/components/custom/intro/Partner.svelte";
+    import Address from "$lib/components/custom/Address.svelte";
+    import MenuMobile from "$lib/components/custom/MenuMobile.svelte";
 
     let menuOpen = false;
     let toggleMenu = () => {
