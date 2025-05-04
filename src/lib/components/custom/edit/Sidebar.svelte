@@ -1,7 +1,6 @@
 <script lang="ts">
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import Gallery from "lucide-svelte/icons/gallery-horizontal-end";
-    import Home from "lucide-svelte/icons/home";
     import Phone from "lucide-svelte/icons/phone";
     import User from "lucide-svelte/icons/user";
     import { selectedItem } from "$lib/stores/edit";
@@ -9,8 +8,7 @@
     const items = [
         { title: "Project Gallery", icon: Gallery },
         { title: "Sponsor", icon: User },
-        { title: "Address", icon: Home },
-        { title: "About Contact", icon: Phone },
+        { title: "Other", icon: Phone },
     ];
 </script>
 

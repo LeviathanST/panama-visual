@@ -2,17 +2,15 @@
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import AppSidebar from "$lib/components/custom/edit/Sidebar.svelte";
     import ProjectGalleryEdit from "$lib/components/custom/edit/ProjectGalleryEdit.svelte";
-    import AboutContactEdit from "$lib/components/custom/edit/AboutContactEdit.svelte";
     import SponsorsEdit from "$lib/components/custom/edit/SponsorEdit.svelte";
-    import AddressEdit from "$lib/components/custom/edit/AddressEdit.svelte";
+    import OtherEdit from "$lib/components/custom/edit/OtherEdit.svelte";
     import { selectedItem } from "$lib/stores/edit";
 
     let { children } = $props();
     const contentMap: Record<string, any> = {
         "Project Gallery": ProjectGalleryEdit,
-        "About Contact": AboutContactEdit,
         Sponsor: SponsorsEdit,
-        Address: AddressEdit,
+        Other: OtherEdit,
     };
 </script>
 
