@@ -7,14 +7,24 @@ type Sponsor = {
 }
 const prefixPath = "/images/sponsors/"
 const sponsorsName = [
-    "abbive",
-    "euromina",
-    "s7",
-    "kimlongnam",
-    "kanifa",
-    "hoasen",
-    "huawei",
-    "heineken"
+    "tpbank",
+    "viettel",
+    "vincom",
+    "mbbank",
+    "mobifone",
+    "sungroup",
+    "sunbright",
+    "cengroup",
+    "heineken",
+    "fptplay",
+    "huyndai",
+    "techcombank",
+    "vmo",
+    "bidv",
+    "viettravel",
+    "nhandan",
+    "fptsoftware",
+    "longchau"
 ]
 var sponsors: Sponsor[] = [];
 sponsorsName.forEach((name, idx) => {
