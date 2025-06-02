@@ -73,10 +73,9 @@
         if (!galleryScrollContainer || !zoomedImage) return;
         const isMobile = window.innerWidth <= 767;
         if (isMobile) {
-            // Vertical scrolling: Find the most visible image
             const containerRect =
                 galleryScrollContainer.getBoundingClientRect();
-            let closestIndex = Infinity;
+            let closestIndex = 0;
             let minDistance = Infinity;
             Array.from(galleryScrollContainer.children).forEach(
                 (child, index) => {
@@ -95,7 +94,6 @@
                 Math.min(closestIndex, zoomedImage.length - 1),
             );
         } else {
-            // Horizontal scrolling: Use scrollLeft
             const scrollLeft = galleryScrollContainer.scrollLeft;
             const containerWidth = galleryScrollContainer.clientWidth;
             const newIndex = Math.round(scrollLeft / containerWidth);
@@ -108,9 +106,18 @@
 
     function scrollToImage(index: number) {
         if (!galleryScrollContainer || !zoomedImage) return;
-        const isMobile = window.innerWidth > 767;
+        const isMobile = window.innerWidth <= 767;
         if (isMobile) {
-            // Scroll horizontally for desktop
+            // Vertical scrolling for mobile
+            const targetChild = galleryScrollContainer.children[index];
+            if (targetChild) {
+                targetChild.scrollIntoView({
+                    behavior: "smooth",
+                    block: "start",
+                });
+            }
+        } else {
+            // Horizontal scrolling for desktop
             galleryScrollContainer.scrollTo({
                 left: index * galleryScrollContainer.clientWidth,
                 behavior: "smooth",
@@ -292,12 +299,12 @@
     {#if zoomedImage}
         {#if zoomedImage.length === 1}
             <div
-                class="image-modal cursor-pointer fixed inset-0 bg-[#1e1e1e]/90 flex items-center justify-center p-4 sm:p-6 z-50"
+                class="image-modal cursor-pointer fixed inset-0 bg-[#1e1e1e]/90 flex items-center justify-center p-0 z-50"
                 transition:fade={{ duration: 150 }}
                 on:click={closeImage}
             >
                 <div
-                    class="image-container cursor-default w-full max-w-[90vw] max-h-[368px] sm:max-h-[80vh] relative"
+                    class="image-container cursor-default w-full h-full relative"
                 >
                     <button
                         class="absolute top-2 right-2 text-white bg-black/60 rounded-full w-8 h-8 flex items-center justify-center z-10"
@@ -308,19 +315,19 @@
                     </button>
                     <img
                         src={zoomedImage[0]}
-                        class="w-full h-full object-contain rounded-lg"
+                        class="w-full h-full object-contain"
                         alt="Zoomed Project Image"
                     />
                 </div>
             </div>
         {:else}
             <div
-                class="image-modal cursor-pointer fixed inset-0 bg-[#1e1e1e]/90 flex items-center justify-center p-0 sm:p-6 z-50"
+                class="image-modal cursor-pointer fixed inset-0 bg-[#1e1e1e]/90 flex items-center justify-center p-0 z-50"
                 transition:fade={{ duration: 150 }}
                 on:click={closeImage}
             >
                 <div
-                    class="image-container cursor-default w-full max-w-[90vw] max-h-[368px] sm:max-h-[80vh] relative"
+                    class="image-container cursor-default w-full h-full relative"
                     on:click|stopPropagation
                     on:keydown={(e) => {
                         if (e.key === "ArrowLeft" && window.innerWidth > 767) {
@@ -334,24 +341,24 @@
                 >
                     <!-- Close Button -->
                     <button
-                        class="absolute top-2 right-2 sm:top-4 sm:right-4 text-white bg-black/60 rounded-full w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center z-10"
+                        class="absolute top-4 right-4 text-white bg-black/60 rounded-full w-10 h-10 flex items-center justify-center z-10"
                         on:click={closeImage}
                         aria-label="Close gallery"
                     >
                         ✕
                     </button>
-                    <!-- Image List (Vertical on Mobile, Horizontal on Desktop) -->
+                    <!-- Image List -->
                     <div
-                        class="gallery-scroll overflow-y-auto sm:overflow-x-auto sm:flex scroll-smooth sm:snap-x sm:snap-mandatory h-full w-full touch-pan-y sm:touch-pan-x"
+                        class="gallery-scroll overflow-y-auto max-[767px]:snap-y max-[767px]:snap-mandatory w-full h-full touch-pan-y"
                         bind:this={galleryScrollContainer}
                     >
                         {#each zoomedImage as image, index}
                             <div
-                                class="w-full sm:flex-shrink-0 sm:h-full flex items-center justify-center sm:snap-center mb-4 sm:mb-0 last:mb-0"
+                                class="w-full h-full flex items-center justify-center max-[767px]:snap-start"
                             >
                                 <img
                                     src={image}
-                                    class="w-full max-h-[368px] sm:max-h-full object-contain rounded-lg"
+                                    class="w-full h-full object-contain"
                                     alt="Gallery Image {index + 1}"
                                 />
                             </div>
@@ -360,7 +367,7 @@
                     <!-- Image Counter -->
                     {#if zoomedImage.length > 1}
                         <div
-                            class="absolute bottom-2 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium"
+                            class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium"
                         >
                             {currentImageIndex + 1} / {zoomedImage.length}
                         </div>
@@ -523,26 +530,47 @@
         background: black/80;
     }
 
-    .image-container img {
-        max-width: 100%;
-        max-height: 100%;
-    }
-
     /* Mobile-specific adjustments */
     @media only screen and (max-width: 767px) {
-        .image-container {
-            padding: 0;
-        }
         .image-modal {
             padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
+
+        .image-container {
+            width: 100%;
+            height: 100vh;
+            max-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
         .gallery-scroll {
-            max-height: 368px;
             overflow-y: auto;
+            overflow-x: hidden;
+            width: 100%;
+            height: 100%;
             touch-action: pan-y;
         }
+
         .gallery-scroll > div {
-            max-height: 368px;
+            width: 100%;
+            height: 100vh;
+            max-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .gallery-scroll img {
+            width: 100%;
+            height: auto;
+            max-height: 100vh;
+            object-fit: contain;
         }
     }
 
@@ -550,11 +578,26 @@
     @media only screen and (min-width: 768px) {
         .gallery-scroll {
             overflow-x: auto;
+            overflow-y: hidden;
+            display: flex;
             touch-action: pan-x;
+            scroll-snap-type: x mandatory;
         }
+
         .gallery-scroll > div {
             width: 100%;
             flex: 0 0 auto;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            scroll-snap-align: center;
+        }
+
+        .gallery-scroll img {
+            max-width: 100%;
+            max-height: 80vh;
+            object-fit: contain;
         }
     }
 </style>
