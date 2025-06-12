@@ -12,12 +12,13 @@
     let visibleCount = 5;
     let selectedMedia: { type: "video" | "image"; url: string }[] | null = null;
     let currentMediaIndex = 0;
+    let selectedProjectId: number | null = null; // Track selected project
     const increment = 6;
     const categories = get(categoryStore);
     const projects = get(project2Store);
     $: currentCategory = $readCurrentCategory;
     $: filteredProjects = projects.filter(
-        (p) => p.category_id === currentCategory,
+        (p) => p.category === currentCategory,
     );
     $: totalProjects = filteredProjects.length;
     $: hasMore = visibleCount < totalProjects;
@@ -28,6 +29,7 @@
 
     readCurrentCategory.subscribe(() => {
         visibleCount = 5;
+        selectedProjectId = null; // Reset on category change
     });
 
     function loadMore() {
@@ -37,11 +39,13 @@
     function handleProjectClick(
         event: MouseEvent,
         project: {
+            id: number;
             video?: { url: string; thumbnail: string };
             images?: string[];
         },
     ) {
         event.preventDefault();
+        selectedProjectId = project.id; // Set selected project
         const media: { type: "video" | "image"; url: string }[] = [];
         if (project.video?.url) {
             media.push({ type: "video", url: project.video.url });
@@ -62,6 +66,7 @@
     function closeModal() {
         selectedMedia = null;
         currentMediaIndex = 0;
+        selectedProjectId = null; // Reset selected project
     }
 
     function updateCurrentMediaIndex() {
@@ -197,6 +202,7 @@
             <a
                 class="item project-gallery cursor-pointer min-[1200px]:w-[33.3%] min-[768px]:w-[50%] max-[767px]:w-[100%]"
                 class:lv-big={index < 2}
+                class:active={project.id === selectedProjectId}
                 on:click={(e) => handleProjectClick(e, project)}
             >
                 <div class="image-wrapper w-full h-full">
@@ -222,8 +228,12 @@
                     <div
                         class="info transition-all duration-300 w-full bottom-0 left-0 z-1 absolute min-[1200px]:pb-[50px] min-[768px]:pb-[35px] pb-[35px] min-[1200px]:px-[60px] px-[20px]"
                     >
+                        <!-- Enhanced overlay -->
                         <div
-                            class="cate text-[var(--general-color)] font-[500] text-[18px]"
+                            class="overlay absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-none"
+                        ></div>
+                        <div
+                            class="cate text-[var(--general-color)] font-[500] text-[18px] relative z-10"
                         >
                             {translate(
                                 categories.find(
@@ -233,12 +243,14 @@
                             )}
                         </div>
                         <h3
-                            class="title text-white min-[1200px]:text-[36px] min-[768px]:text-[24px] mb-[8px]"
+                            class="title text-white min-[1200px]:text-[36px] min-[768px]:text-[24px] mb-[8px] relative z-10"
                         >
                             {project.title}
                         </h3>
                         {#if project.time}
-                            <div class="time flex text-white items-center">
+                            <div
+                                class="time flex text-white items-center relative z-10"
+                            >
                                 <img
                                     src="/images/products_ico_clock.png"
                                     alt="Clock"
@@ -249,7 +261,9 @@
                                 >
                             </div>
                         {/if}
-                        <div class="des w-full hidden text-[22px] text-white">
+                        <div
+                            class="des w-full hidden text-[22px] text-white relative z-10"
+                        >
                             {project.description}
                         </div>
                     </div>
@@ -420,6 +434,8 @@
         background: url("/images/products_ico_play.png") 50% no-repeat
             var(--general-color);
         margin-top: 25px;
+        position: relative; /* Ensure stacking context */
+        z-index: 20; /* Higher than overlay and text */
     }
 
     .clock-icon {
@@ -432,6 +448,19 @@
         background: #1c1d1f;
         border: 1px solid #2d2d2f;
         text-align: center;
+    }
+
+    /* Overlay styles */
+    .item:hover .overlay,
+    .item.active .overlay {
+        opacity: 1;
+    }
+
+    .overlay {
+        bottom: 8px; /* Align with bottom border */
+        z-index: 0; /* Behind text and play icon */
+        background: rgba(0, 0, 0, 0.7); /* Solid dark background */
+        backdrop-filter: blur(4px); /* Frosted glass effect */
     }
 
     @media only screen and (min-width: 1200px) {
@@ -453,6 +482,22 @@
 
         .lv-big {
             width: 50%;
+        }
+
+        .overlay {
+            bottom: 50px; /* Match info padding */
+        }
+    }
+
+    @media only screen and (min-width: 768px) and (max-width: 1199px) {
+        .overlay {
+            bottom: 35px; /* Match info padding */
+        }
+    }
+
+    @media only screen and (max-width: 767px) {
+        .overlay {
+            bottom: 35px; /* Match info padding */
         }
     }
 

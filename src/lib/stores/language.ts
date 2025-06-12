@@ -23,8 +23,8 @@ export function translate(key: keyof typeof mappingObject) {
 let mappingObject = {
     // Header content
     'PANAMA_VISUAL': {
-        'en': 'PANAMA VISUAL',
-        'vi': 'PANAMA VISUAL'
+        'en': 'Panama Visual',
+        'vi': 'Panama Visual'
     },
     'OUR_PORTFOLIO': {
         'en': 'OUR PORTFOLIO',

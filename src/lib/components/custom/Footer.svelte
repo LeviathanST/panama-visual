@@ -18,7 +18,7 @@
         <div
             class="logo h-[60px] w-[103px] max-[767px]:row-start-1 max-[767px]:col-start-1"
         >
-            <a href="https://eclipspictures.com">
+            <a href="#">
                 <img
                     src="/images/logo.png"
                     alt="logo"
