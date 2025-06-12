@@ -10,9 +10,9 @@
     export let autoLoad: boolean = true;
 
     let visibleCount = 5;
-    let video_link: string | null = null;
-    let zoomedImage: string[] | null = null;
-    let currentImageIndex = 0;
+    let selectedMedia: { type: "video" | "image"; url: string }[] | null = null;
+    let currentMediaIndex = 0;
+    let selectedProjectId: number | null = null; // Track selected project
     const increment = 6;
     const categories = get(categoryStore);
     const projects = get(project2Store);
@@ -29,6 +29,7 @@
 
     readCurrentCategory.subscribe(() => {
         visibleCount = 5;
+        selectedProjectId = null; // Reset on category change
     });
 
     function loadMore() {
@@ -38,39 +39,38 @@
     function handleProjectClick(
         event: MouseEvent,
         project: {
-            type: "image" | "video";
-            video?: {
-                url: string;
-                thumbnail: string;
-            };
+            id: number;
+            video?: { url: string; thumbnail: string };
             images?: string[];
         },
     ) {
         event.preventDefault();
-        if (project.type === "video" && project.video?.url) {
-            video_link = project.video.url;
-        } else if (project.type === "image") {
-            if (!project.images || project.images.length === 0) {
-                console.log("Image list is empty");
-                zoomedImage = null;
-            } else {
-                zoomedImage = project.images;
-                currentImageIndex = 0;
-            }
+        selectedProjectId = project.id; // Set selected project
+        const media: { type: "video" | "image"; url: string }[] = [];
+        if (project.video?.url) {
+            media.push({ type: "video", url: project.video.url });
+        }
+        if (project.images && project.images.length > 0) {
+            media.push(
+                ...project.images.map((img) => ({ type: "image", url: img })),
+            );
+        }
+        if (media.length > 0) {
+            selectedMedia = media;
+            currentMediaIndex = 0;
+        } else {
+            console.log("No media to display");
         }
     }
 
-    function closeVideo() {
-        video_link = null;
+    function closeModal() {
+        selectedMedia = null;
+        currentMediaIndex = 0;
+        selectedProjectId = null; // Reset selected project
     }
 
-    function closeImage() {
-        zoomedImage = null;
-        currentImageIndex = 0;
-    }
-
-    function updateCurrentImageIndex() {
-        if (!galleryScrollContainer || !zoomedImage) return;
+    function updateCurrentMediaIndex() {
+        if (!galleryScrollContainer || !selectedMedia) return;
         const isMobile = window.innerWidth <= 767;
         if (isMobile) {
             const containerRect =
@@ -89,26 +89,25 @@
                     }
                 },
             );
-            currentImageIndex = Math.max(
+            currentMediaIndex = Math.max(
                 0,
-                Math.min(closestIndex, zoomedImage.length - 1),
+                Math.min(closestIndex, selectedMedia.length - 1),
             );
         } else {
             const scrollLeft = galleryScrollContainer.scrollLeft;
             const containerWidth = galleryScrollContainer.clientWidth;
             const newIndex = Math.round(scrollLeft / containerWidth);
-            currentImageIndex = Math.max(
+            currentMediaIndex = Math.max(
                 0,
-                Math.min(newIndex, zoomedImage.length - 1),
+                Math.min(newIndex, selectedMedia.length - 1),
             );
         }
     }
 
-    function scrollToImage(index: number) {
-        if (!galleryScrollContainer || !zoomedImage) return;
+    function scrollToMedia(index: number) {
+        if (!galleryScrollContainer || !selectedMedia) return;
         const isMobile = window.innerWidth <= 767;
         if (isMobile) {
-            // Vertical scrolling for mobile
             const targetChild = galleryScrollContainer.children[index];
             if (targetChild) {
                 targetChild.scrollIntoView({
@@ -117,7 +116,6 @@
                 });
             }
         } else {
-            // Horizontal scrolling for desktop
             galleryScrollContainer.scrollTo({
                 left: index * galleryScrollContainer.clientWidth,
                 behavior: "smooth",
@@ -138,9 +136,9 @@
         };
     }
 
-    const debouncedUpdateIndex = debounce(updateCurrentImageIndex, 100);
+    const debouncedUpdateIndex = debounce(updateCurrentMediaIndex, 100);
 
-    $: if (zoomedImage && zoomedImage.length > 1) {
+    $: if (selectedMedia && selectedMedia.length > 1) {
         setTimeout(() => {
             galleryScrollContainer = document.querySelector(".gallery-scroll");
             if (galleryScrollContainer) {
@@ -204,16 +202,17 @@
             <a
                 class="item project-gallery cursor-pointer min-[1200px]:w-[33.3%] min-[768px]:w-[50%] max-[767px]:w-[100%]"
                 class:lv-big={index < 2}
+                class:active={project.id === selectedProjectId}
                 on:click={(e) => handleProjectClick(e, project)}
             >
                 <div class="image-wrapper w-full h-full">
-                    {#if project.type === "video" && project.video?.thumbnail}
+                    {#if project.video?.thumbnail}
                         <img
                             src={project.video.thumbnail}
                             class="img"
                             alt={project.title}
                         />
-                    {:else if project.type === "image" && project.images?.[0]}
+                    {:else if project.images?.[0]}
                         <img
                             src={project.images[0]}
                             class="img"
@@ -227,12 +226,14 @@
                         </div>
                     {/if}
                     <div
-                        class="info transition-all duration-300 w-full bottom-0 left-0 z-1 absolute
-                        min-[1200px]:pb-[50px] min-[768px]:pb-[35px] pb-[35px]
-                        min-[1200px]:px-[60px] px-[20px]"
+                        class="info transition-all duration-300 w-full bottom-0 left-0 z-1 absolute min-[1200px]:pb-[50px] min-[768px]:pb-[35px] pb-[35px] min-[1200px]:px-[60px] px-[20px]"
                     >
+                        <!-- Enhanced overlay -->
                         <div
-                            class="cate text-[var(--general-color)] font-[500] text-[18px]"
+                            class="overlay absolute inset-0 bg-black/70 backdrop-blur-sm opacity-0 transition-opacity duration-300 pointer-events-none"
+                        ></div>
+                        <div
+                            class="cate text-[var(--general-color)] font-[500] text-[18px] relative z-10"
                         >
                             {translate(
                                 categories.find(
@@ -242,12 +243,14 @@
                             )}
                         </div>
                         <h3
-                            class="title text-white min-[1200px]:text-[36px] min-[768px]:text-[24px] mb-[8px]"
+                            class="title text-white min-[1200px]:text-[36px] min-[768px]:text-[24px] mb-[8px] relative z-10"
                         >
                             {project.title}
                         </h3>
                         {#if project.time}
-                            <div class="time flex text-white items-center">
+                            <div
+                                class="time flex text-white items-center relative z-10"
+                            >
                                 <img
                                     src="/images/products_ico_clock.png"
                                     alt="Clock"
@@ -258,7 +261,9 @@
                                 >
                             </div>
                         {/if}
-                        <div class="des w-full hidden text-[22px] text-white">
+                        <div
+                            class="des w-full hidden text-[22px] text-white relative z-10"
+                        >
                             {project.description}
                         </div>
                     </div>
@@ -277,148 +282,108 @@
         </div>
     {/if}
 
-    {#if video_link}
+    {#if selectedMedia}
         <div
-            class="video-modal cursor-pointer fixed inset-0 bg-[#1e1e1e]/90 flex items-center justify-center p-4 sm:p-6 z-50"
+            class="media-modal cursor-pointer fixed inset-0 bg-[#1e1e1e]/90 flex items-center justify-center p-0 z-50"
             transition:fade={{ duration: 150 }}
-            on:click={closeVideo}
+            on:click={closeModal}
         >
             <div
-                class="video-container cursor-default w-full max-w-[90vw] sm:max-w-[80vw] lg:max-w-4xl relative"
+                class="media-container cursor-default w-full h-full relative"
+                on:click|stopPropagation
+                on:keydown={(e) => {
+                    if (e.key === "ArrowLeft" && window.innerWidth > 767) {
+                        scrollToMedia(currentMediaIndex - 1);
+                    }
+                    if (e.key === "ArrowRight" && window.innerWidth > 767) {
+                        scrollToMedia(currentMediaIndex + 1);
+                    }
+                }}
+                tabindex="0"
             >
-                <video
-                    class="aspect-video w-full h-auto rounded-lg"
-                    src={video_link}
-                    controls
-                    autoplay
-                ></video>
-            </div>
-        </div>
-    {/if}
-
-    {#if zoomedImage}
-        {#if zoomedImage.length === 1}
-            <div
-                class="image-modal cursor-pointer fixed inset-0 bg-[#1e1e1e]/90 flex items-center justify-center p-0 z-50"
-                transition:fade={{ duration: 150 }}
-                on:click={closeImage}
-            >
-                <div
-                    class="image-container cursor-default w-full h-full relative"
+                <button
+                    class="absolute top-4 right-4 text-white bg-black/60 rounded-full w-10 h-10 flex items-center justify-center z-10"
+                    on:click={closeModal}
+                    aria-label="Close gallery"
                 >
-                    <button
-                        class="absolute top-2 right-2 text-white bg-black/60 rounded-full w-8 h-8 flex items-center justify-center z-10"
-                        on:click={closeImage}
-                        aria-label="Close image"
-                    >
-                        ✕
-                    </button>
-                    <img
-                        src={zoomedImage[0]}
-                        class="w-full h-full object-contain"
-                        alt="Zoomed Project Image"
-                    />
-                </div>
-            </div>
-        {:else}
-            <div
-                class="image-modal cursor-pointer fixed inset-0 bg-[#1e1e1e]/90 flex items-center justify-center p-0 z-50"
-                transition:fade={{ duration: 150 }}
-                on:click={closeImage}
-            >
+                    ✕
+                </button>
                 <div
-                    class="image-container cursor-default w-full h-full relative"
-                    on:click|stopPropagation
-                    on:keydown={(e) => {
-                        if (e.key === "ArrowLeft" && window.innerWidth > 767) {
-                            scrollToImage(currentImageIndex - 1);
-                        }
-                        if (e.key === "ArrowRight" && window.innerWidth > 767) {
-                            scrollToImage(currentImageIndex + 1);
-                        }
-                    }}
-                    tabindex="0"
+                    class="gallery-scroll overflow-y-auto max-[767px]:snap-y max-[767px]:snap-mandatory w-full h-full touch-pan-y"
+                    bind:this={galleryScrollContainer}
                 >
-                    <!-- Close Button -->
-                    <button
-                        class="absolute top-4 right-4 text-white bg-black/60 rounded-full w-10 h-10 flex items-center justify-center z-10"
-                        on:click={closeImage}
-                        aria-label="Close gallery"
-                    >
-                        ✕
-                    </button>
-                    <!-- Image List -->
-                    <div
-                        class="gallery-scroll overflow-y-auto max-[767px]:snap-y max-[767px]:snap-mandatory w-full h-full touch-pan-y"
-                        bind:this={galleryScrollContainer}
-                    >
-                        {#each zoomedImage as image, index}
-                            <div
-                                class="w-full h-full flex items-center justify-center max-[767px]:snap-start"
-                            >
+                    {#each selectedMedia as item, index}
+                        <div
+                            class="w-full h-full flex items-center justify-center max-[767px]:snap-start"
+                        >
+                            {#if item.type === "video"}
+                                <video
+                                    src={item.url}
+                                    controls
+                                    class="w-full h-auto object-contain"
+                                />
+                            {:else}
                                 <img
-                                    src={image}
-                                    class="w-full h-full object-contain"
+                                    src={item.url}
+                                    class="w-full h-auto object-contain"
                                     alt="Gallery Image {index + 1}"
                                 />
-                            </div>
-                        {/each}
-                    </div>
-                    <!-- Image Counter -->
-                    {#if zoomedImage.length > 1}
-                        <div
-                            class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium"
-                        >
-                            {currentImageIndex + 1} / {zoomedImage.length}
+                            {/if}
                         </div>
-                        <!-- Navigation Arrows (Desktop Only) -->
-                        <button
-                            class="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 bg-black/60 text-white rounded-full w-10 h-10 items-center justify-center hover:bg-black/80 transition-colors"
-                            on:click|stopPropagation={() =>
-                                scrollToImage(currentImageIndex - 1)}
-                            disabled={currentImageIndex === 0}
-                            aria-label="Previous image"
-                        >
-                            <svg
-                                class="w-6 h-6"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M15 19l-7-7 7-7"
-                                />
-                            </svg>
-                        </button>
-                        <button
-                            class="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 bg-black/60 text-white rounded-full w-10 h-10 items-center justify-center hover:bg-black/80 transition-colors"
-                            on:click|stopPropagation={() =>
-                                scrollToImage(currentImageIndex + 1)}
-                            disabled={currentImageIndex ===
-                                zoomedImage.length - 1}
-                            aria-label="Next image"
-                        >
-                            <svg
-                                class="w-6 h-6"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M9 5l7 7-7 7"
-                                />
-                            </svg>
-                        </button>
-                    {/if}
+                    {/each}
                 </div>
+                {#if selectedMedia.length > 1}
+                    <div
+                        class="absolute bottom-4 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-3 py-1 rounded-full text-sm font-medium"
+                    >
+                        {currentMediaIndex + 1} / {selectedMedia.length}
+                    </div>
+                    <button
+                        class="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 bg-black/60 text-white rounded-full w-10 h-10 items-center justify-center hover:bg-black/80 transition-colors"
+                        on:click|stopPropagation={() =>
+                            scrollToMedia(currentMediaIndex - 1)}
+                        disabled={currentMediaIndex === 0}
+                        aria-label="Previous media"
+                    >
+                        <svg
+                            class="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M15 19l-7-7 7-7"
+                            />
+                        </svg>
+                    </button>
+                    <button
+                        class="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 bg-black/60 text-white rounded-full w-10 h-10 items-center justify-center hover:bg-black/80 transition-colors"
+                        on:click|stopPropagation={() =>
+                            scrollToMedia(currentMediaIndex + 1)}
+                        disabled={currentMediaIndex ===
+                            selectedMedia.length - 1}
+                        aria-label="Next media"
+                    >
+                        <svg
+                            class="w-6 h-6"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M9 5l7 7-7 7"
+                            />
+                        </svg>
+                    </button>
+                {/if}
             </div>
-        {/if}
+        </div>
     {/if}
 </div>
 
@@ -469,11 +434,8 @@
         background: url("/images/products_ico_play.png") 50% no-repeat
             var(--general-color);
         margin-top: 25px;
-    }
-
-    .video-container,
-    .image-container {
-        max-width: min(90vw, 960px);
+        position: relative; /* Ensure stacking context */
+        z-index: 20; /* Higher than overlay and text */
     }
 
     .clock-icon {
@@ -486,6 +448,19 @@
         background: #1c1d1f;
         border: 1px solid #2d2d2f;
         text-align: center;
+    }
+
+    /* Overlay styles */
+    .item:hover .overlay,
+    .item.active .overlay {
+        opacity: 1;
+    }
+
+    .overlay {
+        bottom: 8px; /* Align with bottom border */
+        z-index: 0; /* Behind text and play icon */
+        background: rgba(0, 0, 0, 0.7); /* Solid dark background */
+        backdrop-filter: blur(4px); /* Frosted glass effect */
     }
 
     @media only screen and (min-width: 1200px) {
@@ -508,9 +483,24 @@
         .lv-big {
             width: 50%;
         }
+
+        .overlay {
+            bottom: 50px; /* Match info padding */
+        }
     }
 
-    /* Gallery Scroll Styles */
+    @media only screen and (min-width: 768px) and (max-width: 1199px) {
+        .overlay {
+            bottom: 35px; /* Match info padding */
+        }
+    }
+
+    @media only screen and (max-width: 767px) {
+        .overlay {
+            bottom: 35px; /* Match info padding */
+        }
+    }
+
     .gallery-scroll {
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
@@ -521,25 +511,24 @@
         display: none;
     }
 
-    .image-modal button:disabled {
+    .media-modal button:disabled {
         opacity: 0.3;
         cursor: not-allowed;
     }
 
-    .image-modal button:not(:disabled):hover {
+    .media-modal button:not(:disabled):hover {
         background: black/80;
     }
 
-    /* Mobile-specific adjustments */
     @media only screen and (max-width: 767px) {
-        .image-modal {
+        .media-modal {
             padding: 0;
             display: flex;
             align-items: center;
             justify-content: center;
         }
 
-        .image-container {
+        .media-container {
             width: 100%;
             height: 100vh;
             max-height: 100vh;
@@ -566,6 +555,7 @@
             flex-shrink: 0;
         }
 
+        .gallery-scroll video,
         .gallery-scroll img {
             width: 100%;
             height: auto;
@@ -574,7 +564,6 @@
         }
     }
 
-    /* Desktop-specific adjustments */
     @media only screen and (min-width: 768px) {
         .gallery-scroll {
             overflow-x: auto;
@@ -594,6 +583,7 @@
             scroll-snap-align: center;
         }
 
+        .gallery-scroll video,
         .gallery-scroll img {
             max-width: 100%;
             max-height: 80vh;

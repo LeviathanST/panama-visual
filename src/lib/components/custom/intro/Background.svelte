@@ -25,7 +25,7 @@
     />
     {#if !isLoaded}
         <img
-            src="/images/header_img_banner_video.png"
+            src="/images/address-bg.jpg"
             alt="bg-mask-video"
             class="absolute w-full h-full z-[2]"
             transition:fade={{ duration: 2000, easing: circIn }}
@@ -79,11 +79,8 @@
         >
             <a
                 class="tracking-[1px]"
-                href="https://www.facebook.com/eclipspictures/"
+                href="https://www.facebook.com/profile.php?id=100092361582680"
                 >Facebook Fanpage</a
-            >
-            <a class="tracking-[1px]" href="https://www.youtube.com/VySlash"
-                >Youtube Channel</a
             >
         </div>
     </div>

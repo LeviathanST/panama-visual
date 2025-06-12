@@ -9,7 +9,7 @@ type Category = {
 }
 const categories = [
     {
-        name: "VISUAL_STAGE",
+        name: "PANAMA_VISUAL",
         normal: "quickmenu_ico_visuals.png",
         hover: "quickmenu_ico_visuals_hover.png",
         id: 1,
