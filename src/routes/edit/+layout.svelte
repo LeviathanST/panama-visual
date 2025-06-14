@@ -5,10 +5,11 @@
     import SponsorsEdit from "$lib/components/custom/edit/SponsorEdit.svelte";
     import OtherEdit from "$lib/components/custom/edit/OtherEdit.svelte";
     import { selectedItem } from "$lib/stores/edit";
+    import ProjectManager from "$lib/components/custom/edit/ProjectManager.svelte";
 
     let { children } = $props();
     const contentMap: Record<string, any> = {
-        "Project Gallery": ProjectGalleryEdit,
+        "Project Manager": ProjectManager,
         Sponsor: SponsorsEdit,
         Other: OtherEdit,
     };

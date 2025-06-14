@@ -30,16 +30,15 @@
     let imageFiles: FileList | null = null;
     let videoFile: FileList | null = null;
     let thumbnailFile: FileList | null = null;
-    let uploadedImageUrls: string[] = [];
-    let uploadedVideoUrl: string = "";
-    let uploadedThumbnailUrl: string = "";
+    let keptImageUrls: string[] = [];
+    let existingVideo: { url: string; thumbnail: string } | null = null;
+    let removeExistingVideo = false;
     let imageInput: HTMLInputElement | null = null;
     let videoInput: HTMLInputElement | null = null;
     let thumbnailInput: HTMLInputElement | null = null;
     let selectedImageNames: string[] = [];
     let selectedVideoName: string = "";
     let selectedThumbnailName: string = "";
-    let existingThumbnailUrl: string = "";
     let time = "";
     let description = "";
     let editingId: number | null = null;
@@ -76,51 +75,61 @@
         return matchesCategory && matchesSearch;
     });
 
-    $: previewImages = imageFiles
-        ? Array.from(imageFiles).map((file) => URL.createObjectURL(file))
-        : uploadedImageUrls;
+    $: previewImages = [
+        ...keptImageUrls,
+        ...(imageFiles
+            ? Array.from(imageFiles).map((file) => URL.createObjectURL(file))
+            : []),
+    ];
+
     $: previewVideo = videoFile
         ? URL.createObjectURL(videoFile[0])
-        : uploadedVideoUrl;
+        : editingId && existingVideo && !removeExistingVideo
+          ? existingVideo.url
+          : "";
 
-    async function handleFileUpload() {
-        const formData = new FormData();
-        let hasFiles = false;
+    async function uploadFiles(formData: FormData): Promise<{
+        images?: string[];
+        video?: string;
+        thumbnail?: string;
+    }> {
+        const response = await fetch("http://localhost:8080/api/test", {
+            method: "POST",
+            headers: {
+                Authorization: "Bearer token",
+            },
+            body: formData,
+        });
+        if (!response.ok) throw new Error("Upload failed");
+        return response.json();
+    }
 
-        if (imageFiles && imageFiles.length > 0) {
-            Array.from(imageFiles).forEach((file) => {
-                formData.append("images", file);
-                hasFiles = true;
-            });
-        }
+    async function createProject(
+        projectData: Omit<Project, "id">,
+    ): Promise<Project> {
+        const response = await fetch("/api/projects", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(projectData),
+        });
+        if (!response.ok) throw new Error("Failed to create project");
+        return response.json();
+    }
 
-        if (videoFile && videoFile.length > 0) {
-            formData.append("video", videoFile[0]);
-            hasFiles = true;
-        }
-
-        if (thumbnailFile && thumbnailFile.length > 0) {
-            formData.append("thumbnail", thumbnailFile[0]);
-            hasFiles = true;
-        }
-
-        if (!hasFiles) return;
-
-        // Mock upload response (replace with actual API call)
-        uploadedImageUrls = imageFiles ? ["test1.png", "test2.png"] : [];
-        uploadedVideoUrl = videoFile ? "test-video.mp4" : "";
-        uploadedThumbnailUrl = thumbnailFile ? "test-thumbnail.jpg" : "";
-        selectedImageNames = [];
-        selectedVideoName = "";
-        selectedThumbnailName = "";
-        imageFiles = null;
-        videoFile = null;
-        thumbnailFile = null;
-        errors = [];
+    async function updateProjectApi(
+        id: number,
+        projectData: Omit<Project, "id">,
+    ): Promise<void> {
+        const response = await fetch(`/api/projects/${id}`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(projectData),
+        });
+        if (!response.ok) throw new Error("Failed to update project");
     }
 
     function handleImageChange() {
-        if (imageFiles && imageFiles.preventDefault > 0) {
+        if (imageFiles && imageFiles.length > 0) {
             selectedImageNames = Array.from(imageFiles).map(
                 (file) => file.name,
             );
@@ -183,17 +192,22 @@
         const newErrors: Errors = [];
         if (!title) newErrors.push("Title is required");
         if (!category) newErrors.push("Category is required");
-        if (
-            (!imageFiles || imageFiles.length === 0) &&
-            !videoFile &&
-            uploadedImageUrls.length === 0 &&
-            !uploadedVideoUrl
-        ) {
+
+        const willHaveImages =
+            (editingId ? keptImageUrls.length : 0) +
+                (imageFiles ? imageFiles.length : 0) >
+            0;
+        const willHaveVideo =
+            videoFile || (editingId && existingVideo && !removeExistingVideo);
+
+        if (!willHaveImages && !willHaveVideo) {
             newErrors.push("At least one image or one video is required");
         }
+
         if (videoFile && (!thumbnailFile || thumbnailFile.length === 0)) {
             newErrors.push("Thumbnail is required when uploading a video");
         }
+
         return newErrors;
     }
 
@@ -201,43 +215,60 @@
         errors = validateForm();
         if (errors.length > 0) return;
 
+        const formData = new FormData();
         try {
+            let newImageUrls: string[] = [];
+            let newVideoUrl: string = "";
+            let newThumbnailUrl: string = "";
+
             if (imageFiles || videoFile || thumbnailFile) {
-                await handleFileUpload();
+                if (imageFiles) {
+                    Array.from(imageFiles).forEach((file) =>
+                        formData.append("images", file),
+                    );
+                }
+                if (videoFile) {
+                    formData.append("video", videoFile[0]);
+                }
+                if (thumbnailFile) {
+                    formData.append("thumbnail", thumbnailFile[0]);
+                }
+                const uploadResult = await uploadFiles(formData);
+                newImageUrls = uploadResult.images || [];
+                newVideoUrl = uploadResult.video || "";
+                newThumbnailUrl = uploadResult.thumbnail || "";
             }
 
-            if (
-                uploadedImageUrls.length === 0 &&
-                !uploadedVideoUrl &&
-                !imageFiles &&
-                !videoFile
-            ) {
-                errors = ["At least one image or one video is required"];
-                return;
+            const finalImageUrls = [...keptImageUrls, ...newImageUrls];
+
+            let finalVideo: { url: string; thumbnail: string } | undefined;
+            if (videoFile) {
+                finalVideo = {
+                    url: newVideoUrl,
+                    thumbnail: newThumbnailUrl,
+                };
+            } else if (editingId && existingVideo && !removeExistingVideo) {
+                finalVideo = existingVideo;
+            } else {
+                finalVideo = undefined;
             }
 
             const projectData: Omit<Project, "id"> = {
                 title,
                 category,
-                images: uploadedImageUrls.length > 0 ? uploadedImageUrls : null,
+                images: imageFiles,
                 time: time || undefined,
-                video: videoFile
-                    ? { url: uploadedVideoUrl, thumbnail: uploadedThumbnailUrl }
-                    : editingId &&
-                        get(project2Store).find((p) => p.id === editingId)
-                            ?.video
-                      ? get(project2Store).find((p) => p.id === editingId)
-                            ?.video
-                      : undefined,
+                video: finalVideo,
                 description: description || undefined,
-                type: "video",
             };
 
             if (editingId) {
+                await updateProjectApi(editingId, projectData);
                 updateProject(editingId, projectData);
                 successMessage = "Project updated successfully!";
             } else {
-                addProject(projectData);
+                const newProject = await createProject(projectData);
+                addProject(newProject);
                 successMessage = "Project added successfully!";
             }
 
@@ -256,17 +287,14 @@
         editingId = project.id;
         title = project.title || "";
         category = project.category;
-        uploadedImageUrls = project.images || [];
-        selectedImageNames =
-            project.images?.map((url) => url.split("/").pop() || "") || [];
+        keptImageUrls = project.images || [];
         imageFiles = null;
-        uploadedVideoUrl = project.video?.url || "";
-        existingThumbnailUrl = project.video?.thumbnail || "";
-        selectedVideoName = project.video?.url
-            ? project.video.url.split("/").pop() || ""
-            : "";
+        selectedImageNames = [];
+        existingVideo = project.video || null;
+        removeExistingVideo = false;
         videoFile = null;
         thumbnailFile = null;
+        selectedVideoName = "";
         selectedThumbnailName = "";
         time = project.time || "";
         description = project.description || "";
@@ -279,13 +307,12 @@
         imageFiles = null;
         videoFile = null;
         thumbnailFile = null;
-        uploadedImageUrls = [];
-        uploadedVideoUrl = "";
-        uploadedThumbnailUrl = "";
+        keptImageUrls = [];
+        existingVideo = null;
+        removeExistingVideo = false;
         selectedImageNames = [];
         selectedVideoName = "";
         selectedThumbnailName = "";
-        existingThumbnailUrl = "";
         time = "";
         description = "";
         editingId = null;
@@ -456,9 +483,9 @@
             <div
                 class="grid gap-6 {title ||
                 imageFiles ||
-                uploadedImageUrls.length ||
+                keptImageUrls.length ||
                 videoFile ||
-                uploadedVideoUrl
+                existingVideo
                     ? 'md:grid-cols-2'
                     : 'md:grid-cols-1'}"
             >
@@ -540,6 +567,35 @@
                                     on:change={handleImageChange}
                                     class="hidden"
                                 />
+                                {#if editingId && keptImageUrls.length > 0}
+                                    <div class="flex flex-wrap gap-2">
+                                        {#each keptImageUrls as url, index}
+                                            <Badge
+                                                class="bg-secondary text-secondary-foreground px-3 py-1 rounded-full flex items-center gap-2 border-input"
+                                            >
+                                                <span
+                                                    class="truncate max-w-[150px]"
+                                                >
+                                                    {url.split("/").pop() ||
+                                                        url}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    class="text-destructive hover:text-destructive/80 text-sm"
+                                                    on:click={() => {
+                                                        keptImageUrls =
+                                                            keptImageUrls.filter(
+                                                                (_, i) =>
+                                                                    i !== index,
+                                                            );
+                                                    }}
+                                                >
+                                                    ✕
+                                                </button>
+                                            </Badge>
+                                        {/each}
+                                    </div>
+                                {/if}
                                 {#if selectedImageNames.length > 0}
                                     <div class="flex flex-wrap gap-2">
                                         {#each selectedImageNames as fileName, index}
@@ -548,8 +604,9 @@
                                             >
                                                 <span
                                                     class="truncate max-w-[150px]"
-                                                    >{fileName}</span
                                                 >
+                                                    {fileName}
+                                                </span>
                                                 <button
                                                     type="button"
                                                     class="text-destructive hover:text-destructive/80 text-sm"
@@ -558,22 +615,6 @@
                                                 >
                                                     ✕
                                                 </button>
-                                            </Badge>
-                                        {/each}
-                                    </div>
-                                {/if}
-                                {#if uploadedImageUrls.length > 0}
-                                    <p class="text-muted-foreground text-sm">
-                                        {uploadedImageUrls.length} image(s) uploaded
-                                    </p>
-                                {/if}
-                                {#if editingId && uploadedImageUrls.length > 0}
-                                    <div class="flex flex-wrap gap-2">
-                                        {#each uploadedImageUrls as url}
-                                            <Badge
-                                                class="bg-secondary text-secondary-foreground px-3 py-1 rounded-full truncate max-w-[200px] border-input"
-                                            >
-                                                {url.split("/").pop() || url}
                                             </Badge>
                                         {/each}
                                     </div>
@@ -604,13 +645,33 @@
                                     on:change={handleVideoChange}
                                     class="hidden"
                                 />
+                                {#if editingId && existingVideo && !removeExistingVideo}
+                                    <div class="space-y-2">
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
+                                            Existing Video: {existingVideo.url
+                                                .split("/")
+                                                .pop()}
+                                        </p>
+                                        <Button
+                                            type="button"
+                                            variant="destructive"
+                                            size="sm"
+                                            onclick={() =>
+                                                (removeExistingVideo = true)}
+                                        >
+                                            Remove Video
+                                        </Button>
+                                    </div>
+                                {/if}
                                 {#if selectedVideoName}
                                     <Badge
                                         class="bg-secondary text-secondary-foreground px-3 py-1 rounded-full flex items-center gap-2 border-input"
                                     >
-                                        <span class="truncate max-w-[150px]"
-                                            >{selectedVideoName}</span
-                                        >
+                                        <span class="truncate max-w-[150px]">
+                                            {selectedVideoName}
+                                        </span>
                                         <button
                                             type="button"
                                             class="text-destructive hover:text-destructive/80 text-sm"
@@ -620,65 +681,62 @@
                                         </button>
                                     </Badge>
                                 {/if}
-                                {#if uploadedVideoUrl}
-                                    <p class="text-muted-foreground text-sm">
-                                        Video uploaded: {uploadedVideoUrl
-                                            .split("/")
-                                            .pop() || uploadedVideoUrl}
-                                    </p>
-                                {/if}
                             </div>
                         </div>
 
-                        {#if editingId && existingThumbnailUrl && !videoFile}
-                            <div class="space-y-2">
-                                <p class="text-sm text-muted-foreground">
-                                    Current Thumbnail: {existingThumbnailUrl
-                                        .split("/")
-                                        .pop()}
-                                </p>
-                            </div>
-                        {/if}
-
-                        {#if videoFile}
+                        {#if videoFile || (editingId && existingVideo && !removeExistingVideo)}
                             <div class="space-y-2">
                                 <label
                                     for="thumbnail_file"
                                     class="text-sm font-medium text-muted-foreground"
                                 >
-                                    Upload Video Thumbnail (Required)
+                                    Upload Video Thumbnail ({videoFile
+                                        ? "Required"
+                                        : "Current"})
                                 </label>
                                 <div class="flex flex-col gap-3">
-                                    <Button
-                                        type="button"
-                                        onclick={triggerThumbnailInput}
-                                    >
-                                        Upload Thumbnail
-                                    </Button>
-                                    <input
-                                        id="thumbnail_file"
-                                        type="file"
-                                        accept="image/*"
-                                        bind:files={thumbnailFile}
-                                        bind:this={thumbnailInput}
-                                        on:change={handleThumbnailChange}
-                                        class="hidden"
-                                    />
-                                    {#if selectedThumbnailName}
-                                        <Badge
-                                            class="bg-secondary text-secondary-foreground px-3 py-1 rounded-full flex items-center gap-2 border-input"
+                                    {#if videoFile}
+                                        <Button
+                                            type="button"
+                                            onclick={triggerThumbnailInput}
                                         >
-                                            <span class="truncate max-w-[150px]"
-                                                >{selectedThumbnailName}</span
+                                            Upload Thumbnail
+                                        </Button>
+                                        <input
+                                            id="thumbnail_file"
+                                            type="file"
+                                            accept="image/*"
+                                            bind:files={thumbnailFile}
+                                            bind:this={thumbnailInput}
+                                            on:change={handleThumbnailChange}
+                                            class="hidden"
+                                        />
+                                        {#if selectedThumbnailName}
+                                            <Badge
+                                                class="bg-secondary text-secondary-foreground px-3 py-1 rounded-full flex items-center gap-2 border-input"
                                             >
-                                            <button
-                                                type="button"
-                                                class="text-destructive hover:text-destructive/80 text-sm"
-                                                on:click={removeThumbnail}
-                                            >
-                                                ✕
-                                            </button>
-                                        </Badge>
+                                                <span
+                                                    class="truncate max-w-[150px]"
+                                                >
+                                                    {selectedThumbnailName}
+                                                </span>
+                                                <button
+                                                    type="button"
+                                                    class="text-destructive hover:text-destructive/80 text-sm"
+                                                    on:click={removeThumbnail}
+                                                >
+                                                    ✕
+                                                </button>
+                                            </Badge>
+                                        {/if}
+                                    {:else if editingId && existingVideo && !removeExistingVideo}
+                                        <p
+                                            class="text-sm text-muted-foreground"
+                                        >
+                                            Current Thumbnail: {existingVideo.thumbnail
+                                                .split("/")
+                                                .pop()}
+                                        </p>
                                     {/if}
                                 </div>
                             </div>
@@ -735,7 +793,7 @@
                     </form>
                 </div>
 
-                {#if title || imageFiles || uploadedImageUrls.length || videoFile || uploadedVideoUrl}
+                {#if title || imageFiles || keptImageUrls.length || videoFile || (existingVideo && !removeExistingVideo)}
                     <div class="space-y-4">
                         <h3 class="text-lg font-semibold text-foreground">
                             Preview

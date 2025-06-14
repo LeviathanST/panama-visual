@@ -6,7 +6,7 @@
     import { selectedItem } from "$lib/stores/edit";
 
     const items = [
-        { title: "Project Gallery", icon: Gallery },
+        { title: "Project Manager", icon: Gallery },
         { title: "Sponsor", icon: User },
         { title: "Other", icon: Phone },
     ];
