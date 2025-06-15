@@ -1,6 +1,8 @@
 <script lang="ts">
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
+    export let data;
+    console.log(data);
     async function handleSubmit(e: SubmitEvent): Promise<void> {
         const formData = new FormData(e.currentTarget as HTMLFormElement);
         const res = await fetch("/login", {

@@ -1,6 +1,6 @@
 import { env } from "$env/dynamic/private";
 
-export const POST = async ({ cookies, request }) => {
+export const POST = async ({ locals, cookies, request }) => {
     const body = await request.json();
     const json = await fetch(env.BACKEND_URL + "/login", {
         body: JSON.stringify({
@@ -14,8 +14,9 @@ export const POST = async ({ cookies, request }) => {
             status: json.status,
             headers: { 'Content-Type': 'application/json' },
         });
-    console.log(json.data)
-    console.log(json.data.at)
+    locals = {
+        user: json.data.at
+    }
     cookies.set('Authorization', json.data.at, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',

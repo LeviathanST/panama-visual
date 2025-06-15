@@ -2,29 +2,28 @@
     import { Button } from "$lib/components/ui/button";
     import { Card, CardContent } from "$lib/components/ui/card";
     import { Input } from "$lib/components/ui/input";
-    import {
-        project2Store,
-        deleteProject,
-        type Project,
-    } from "$lib/stores/project";
+    import { deleteProject, type Project } from "$lib/stores/project";
+    import { getIdFromName } from "$lib/stores/category";
     import { cn } from "$lib/utils";
 
-    // Receive the onEdit callback as a prop
-    export let onEdit: (project: Project) => void;
+    const { projects = [], onEdit } = $props();
 
     let selectedCategory: number | null = null;
     let searchQuery = "";
 
     const categoryOptions = [
-        { value: 1, label: "Visuals Stage" },
+        { value: 1, label: "Panama Visual" },
         { value: 2, label: "Interact Dance" },
         { value: 3, label: "Hologram" },
         { value: 4, label: "3D Mapping" },
     ];
 
-    $: filteredProjects = $project2Store.filter((project) => {
+    let filteredProjects: Project[] = [];
+
+    filteredProjects = projects.filter((project) => {
         const matchesCategory =
-            selectedCategory === null || project.category === selectedCategory;
+            selectedCategory === null ||
+            getIdFromName(project.category) === selectedCategory;
         let matchesSearch = true;
         if (searchQuery) {
             try {
@@ -125,10 +124,6 @@
                                     size="sm"
                                     class="border-[hsl(var(--border))] text-[hsl(var(--foreground))] bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--secondary)/0.8)]"
                                     onclick={() => {
-                                        console.log(
-                                            "Editing project:",
-                                            project,
-                                        );
                                         onEdit(project);
                                     }}
                                 >

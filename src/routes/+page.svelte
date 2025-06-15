@@ -7,6 +7,7 @@
     import Partner from "$lib/components/custom/intro/Partner.svelte";
     import Address from "$lib/components/custom/Address.svelte";
     import MenuMobile from "$lib/components/custom/MenuMobile.svelte";
+    import { page } from "$app/state";
 
     let menuOpen = false;
     let toggleMenu = () => {
@@ -19,7 +20,7 @@
     <div id="app-inner" class="flex-1 overflow-auto">
         <TopHeader {toggleMenu} />
         <Banner />
-        <ProjectsGallery autoLoad={false} />
+        <ProjectsGallery projects={page.data.project.data} autoLoad={false} />
         <AboutContact />
         <Partner />
         <Address />

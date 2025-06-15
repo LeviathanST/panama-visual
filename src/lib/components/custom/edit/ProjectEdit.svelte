@@ -27,6 +27,7 @@
 
     // Update form data and media URLs when project changes
     $: if (project) {
+        console.log(project);
         formData = { ...project, images: undefined, video: undefined };
         imageUrls = project.images || [];
         videoUrl = project.video?.url || null;

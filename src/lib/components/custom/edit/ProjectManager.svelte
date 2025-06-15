@@ -9,25 +9,39 @@
         CardContent,
     } from "$lib/components/ui/card";
     import type { Project } from "$lib/stores/project2";
+    import { writable } from "svelte/store";
+    import AddProjectForm from "./AddProjectForm.svelte";
+    import EditProjectForm from "./EditProjectForm.svelte";
+    let { projects = [] } = $props();
+    let showAddForm = $state(false);
 
-    let projectToEdit: Project | null = null;
-
-    // Function to handle the edit action
+    const projectToEdit = writable<Project | null>(null);
+    console.log($projectToEdit);
     function handleEdit(project: Project) {
-        projectToEdit = project;
+        $projectToEdit = { ...project }; // New reference
+        console.log("Editing project:", $projectToEdit);
+        showAddForm = false;
         document
             .getElementById("edit-form")
             ?.scrollIntoView({ behavior: "smooth" });
     }
 
+    function toggleAddForm() {
+        showAddForm = !showAddForm;
+        $projectToEdit = null;
+        document
+            .getElementById("add-form")
+            ?.scrollIntoView({ behavior: "smooth" });
+    }
+
     // Function to handle reset
     function handleReset() {
-        projectToEdit = null;
+        $projectToEdit = null;
     }
 
     // Function to start adding a new project
     function handleAdd() {
-        projectToEdit = null;
+        $projectToEdit = null;
         document
             .getElementById("edit-form")
             ?.scrollIntoView({ behavior: "smooth" });
@@ -42,15 +56,25 @@
                 Add, edit, or delete studio projects
             </CardDescription>
             <button
-                on:click={handleAdd}
-                class="mt-4 py-2 px-4 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                on:click={toggleAddForm}
+                class="mb-4 py-2 px-4 bg-green-600 text-white rounded-md hover:bg-green-700"
             >
-                Add New Project
+                {showAddForm ? "Hide Add Form" : "Show Add Form"}
             </button>
         </CardHeader>
+
         <CardContent class="space-y-8">
-            <ProjectEdit project={projectToEdit} onReset={handleReset} />
-            <ProjectList onEdit={handleEdit} />
+            {#if showAddForm}
+                <AddProjectForm onReset={() => (showAddForm = false)} />
+            {/if}
+
+            {#if $projectToEdit}
+                <EditProjectForm
+                    project={$projectToEdit}
+                    onReset={() => ($projectToEdit = null)}
+                />
+            {/if}
+            <ProjectList onEdit={handleEdit} {projects} />
         </CardContent>
     </Card>
 </div>

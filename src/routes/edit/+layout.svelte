@@ -1,13 +1,14 @@
 <script lang="ts">
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import AppSidebar from "$lib/components/custom/edit/Sidebar.svelte";
-    import ProjectGalleryEdit from "$lib/components/custom/edit/ProjectGalleryEdit.svelte";
     import SponsorsEdit from "$lib/components/custom/edit/SponsorEdit.svelte";
     import OtherEdit from "$lib/components/custom/edit/OtherEdit.svelte";
     import { selectedItem } from "$lib/stores/edit";
     import ProjectManager from "$lib/components/custom/edit/ProjectManager.svelte";
+    import { page } from "$app/state";
 
     let { children } = $props();
+    const projects = page.data.project.data;
     const contentMap: Record<string, any> = {
         "Project Manager": ProjectManager,
         Sponsor: SponsorsEdit,
@@ -21,9 +22,18 @@
         <Sidebar.Trigger class="mb-4" />
         <div class="flex flex-col flex-1 items-center justify-center">
             {#if $selectedItem && $selectedItem in contentMap}
-                <div class="w-full max-[100%]">
-                    <svelte:component this={contentMap[$selectedItem]} />
-                </div>
+                {#if $selectedItem == "Project Manager"}
+                    <div class="w-full max-[100%]">
+                        <svelte:component
+                            this={contentMap[$selectedItem]}
+                            {projects}
+                        />
+                    </div>
+                {:else}
+                    <div class="w-full max-[100%]">
+                        <svelte:component this={contentMap[$selectedItem]} />
+                    </div>
+                {/if}
             {:else}
                 <div class="p-4 text-center text-muted-foreground">
                     Select an item from the sidebar
