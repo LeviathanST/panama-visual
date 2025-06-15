@@ -33,6 +33,10 @@ const categories = [
         id: 4,
     },
 ];
+export function getIdFromName(name: string): number {
+    const cate = categories.filter(c => c.name == name);
+    return cate[0].id;
+}
 const internalCategories = writable(categories);
 export const categoryStore = readonly<Category[]>(internalCategories);
 

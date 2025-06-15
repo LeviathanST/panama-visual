@@ -1,12 +1,17 @@
 <script lang="ts">
     import { fade } from "svelte/transition";
     import { translate } from "$lib/stores/language";
-    import { project2Store } from "$lib/stores/project";
-    import { categoryStore, readCurrentCategory } from "$lib/stores/category";
+    import {
+        categoryStore,
+        readCurrentCategory,
+        getIdFromName,
+    } from "$lib/stores/category";
     import { get } from "svelte/store";
     import Button from "./common/Button.svelte";
     import { onMount, onDestroy } from "svelte";
+    import type { Project } from "$lib/stores/project";
 
+    export let projects: Project[] = [];
     export let autoLoad: boolean = true;
 
     let visibleCount = 5;
@@ -15,10 +20,9 @@
     let selectedProjectId: number | null = null; // Track selected project
     const increment = 6;
     const categories = get(categoryStore);
-    const projects = get(project2Store);
     $: currentCategory = $readCurrentCategory;
     $: filteredProjects = projects.filter(
-        (p) => p.category === currentCategory,
+        (p) => getIdFromName(p.category) === currentCategory,
     );
     $: totalProjects = filteredProjects.length;
     $: hasMore = visibleCount < totalProjects;
