@@ -102,16 +102,16 @@
                     min-[768px]:h-[60vw]
                     "
                 >
-                    <video
-                        class="max-[1199px]:h-full max-[1199px]:w-full"
-                        autoplay
-                        loop
-                    >
-                        <source
-                            src="/videos/video-content.mp4"
-                            type="video/mp4"
-                        />
-                    </video>
+                    <!-- <video -->
+                    <!--     class="max-[1199px]:h-full max-[1199px]:w-full" -->
+                    <!--     autoplay -->
+                    <!--     loop -->
+                    <!-- > -->
+                    <!--     <source -->
+                    <!--         src="/videos/video-content.mp4" -->
+                    <!--         type="video/mp4" -->
+                    <!--     /> -->
+                    <!-- </video> -->
                 </div>
             </div>
         </div>

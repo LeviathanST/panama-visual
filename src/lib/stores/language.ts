@@ -66,12 +66,12 @@ let mappingObject = {
         'vi': 'NÓI VỀ CHÚNG TÔI'
     },
     'ABOUT_TEXT_1': {
-        'en': 'In 2009, the idea of the name Eclips was formed from the two words Easy-Clips with the initial goal of just producing simple entertainment clips, serving a certain target audience.',
-        'vi': 'Vào năm 2009, ý tưởng cái tên Eclips được hình thành bởi 2 từ Easy-Clips với mục tiêu ban đầu chỉ là sản xuất những clip giải trí đơn giản, phục vụ 1 số đối tượng khách hàng nhất định.'
+        'en': "In 2018, the idea of the name Panama was formed from the family's company name with the goal of following the initial achievements.",
+        'vi': 'Năm 2018, ý tưởng đặt tên Panama được hình thành từ tên công ty của gia đình với mục tiêu tiếp nối những thành tựu bước đầu.'
     },
     'ABOUT_TEXT_2': {
-        'en': 'After 6 years of operation, accumulating experience and knowledge, in April 2015, Vỹ Vlash decided to establish a company of the same name with the slogan "Simplicity is the ultimate sophistication" - Leonardo Davinci. Therefore, Eclips\'s products always aim to be concise and succinct without reducing the effectiveness for customers.',
-        'vi': 'Sau 6 năm hoạt động, tích lũy kinh nghiệm và kiến thức, tháng 4 năm 2015, Vỹ Vlash quyết định thành lập công ty cùng tên với slogan "Simplicity is the ultimate sophistication" ( Đơn giản là đỉnh cao của sự tinh tế ) - Leonardo Davinci. Vì thế, những sản phẩm của Eclips luôn hướng tới sự ngắn gọn, xúc tích nhưng không giảm đi tính hiệu quả mang lại cho khách hàng.'
+        'en': `After 3 years of operation, accumulating experiences and knowledge, September 2021, Tran Thi Loc & Huynh Khanh Huy decided to establish a company with the same name as the slogan "The simplicity is the ultimate" -Leonardo Davinci. Therefore, Panama products are always aimed at concise, concise but do not reduce efficiency for customers. With what have been and will do, the main product is our voice during Panama's operation.`,
+        'vi': 'Sau 3 năm hoạt động, tích lũy kinh nghiệm và kiến thức, tháng 9/2021, Trần Thị Lộc & Huỳnh Khánh Huy quyết định thành lập công ty cùng tên với slogan "Sự đơn giản là tối thượng" - Leonardo Davinci. Vì vậy, các sản phẩm của Panama luôn hướng đến sự súc tích, súc tích nhưng không làm giảm hiệu quả cho khách hàng. Với những gì đã và sẽ làm, sản phẩm chính là tiếng nói của chúng tôi trong quá trình hoạt động của Panama.'
     },
     'ABOUT_TEXT_3': {
         'en': 'With what has been, is being and will be done, the product is our voice throughout Eclips Pictures\' operation.',
@@ -122,8 +122,8 @@ let mappingObject = {
         'vi': 'XEM THÊM'
     },
     'COPYRIGHT': {
-        'en': '© 2017 Eclips Pictures. Trademarks and brands are the property of their respective owners.',
-        'vi': '© 2017 Eclips Pictures. Trademarks and brands are the property of their respective owners.'
+        'en': '© 2017 Panama Visual. Trademarks and brands are the property of their respective owners.',
+        'vi': '© 2017 Panama Visual. Trademarks and brands are the property of their respective owners.'
     }
 }
 

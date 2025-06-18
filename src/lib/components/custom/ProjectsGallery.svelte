@@ -22,7 +22,7 @@
     const categories = get(categoryStore);
     $: currentCategory = $readCurrentCategory;
     $: filteredProjects = projects.filter(
-        (p) => getIdFromName(p.category) === currentCategory,
+        (p) => p.category === currentCategory,
     );
     $: totalProjects = filteredProjects.length;
     $: hasMore = visibleCount < totalProjects;
