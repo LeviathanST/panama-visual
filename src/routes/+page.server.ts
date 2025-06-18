@@ -2,11 +2,11 @@ import { env } from "$env/dynamic/private";
 import { fail, type Actions } from "@sveltejs/kit";
 
 export const load = async ({ fetch }) => {
-    const res = await fetch(env.BACKEND_URL + "/projects");
-    const json = await res.json();
-    return {
-        project: json,
-    };
+    // const res = await fetch(env.BACKEND_URL + "/projects");
+    // const json = await res.json();
+    // return {
+    //     project: json,
+    // };
 };
 
 function parseFilename(url: string): string | null {
