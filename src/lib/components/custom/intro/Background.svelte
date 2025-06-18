@@ -23,27 +23,32 @@
         alt="bg-mask"
         class="absolute w-full h-full z-[3]"
     />
-    {#if !isLoaded}
-        <img
-            src="/images/address-bg.jpg"
-            alt="bg-mask-video"
-            class="absolute w-full h-full z-[2]"
-            transition:fade={{ duration: 2000, easing: circIn }}
-        />
-    {/if}
+    <!-- {#if !isLoaded} -->
+    <!--     <img -->
+    <!--         src="/images/address-bg.jpg" -->
+    <!--         alt="bg-mask-video" -->
+    <!--         class="absolute w-full h-full z-[2]" -->
+    <!--         transition:fade={{ duration: 2000, easing: circIn }} -->
+    <!--     /> -->
+    <!-- {/if} -->
     <div class="bg-inner w-full top-[0px] h-full">
-        <iframe
-            id="YTPlayer-ID-1744134110124"
-            class="ytplayer-player"
+        <img
             style="width: 100%; height: 100%; left: 0px; top: 0;"
-            frameborder="0"
-            allowfullscreen
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-            referrerpolicy="strict-origin-when-cross-origin"
-            title="banner"
-            on:load={handleOnLoading}
-            src="https://www.youtube.com/embed/lG-fqfLrZms?iv_load_policy=3&amp;modestbranding=0&amp;autoplay=1&amp;controls=0&amp;showinfo=0&amp;wmode=opaque&amp;branding=0&amp;rel=0&amp;start=0&amp;mute=1&amp;loop=1&amp;playlist=lG-fqfLrZms&amp"
-        ></iframe>
+            src="/images/header-bg.jpg"
+            alt="Header bg"
+        />
+        <!-- <iframe -->
+        <!--     id="YTPlayer-ID-1744134110124" -->
+        <!--     class="ytplayer-player" -->
+        <!--     style="width: 100%; height: 100%; left: 0px; top: 0;" -->
+        <!--     frameborder="0" -->
+        <!--     allowfullscreen -->
+        <!--     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" -->
+        <!--     referrerpolicy="strict-origin-when-cross-origin" -->
+        <!--     title="banner" -->
+        <!--     on:load={handleOnLoading} -->
+        <!--     src="https://www.youtube.com/embed/lG-fqfLrZms?iv_load_policy=3&amp;modestbranding=0&amp;autoplay=1&amp;controls=0&amp;showinfo=0&amp;wmode=opaque&amp;branding=0&amp;rel=0&amp;start=0&amp;mute=1&amp;loop=1&amp;playlist=lG-fqfLrZms&amp" -->
+        <!-- ></iframe> -->
     </div>
     <div
         class="slide top-1/2 -translate-y-1/2 z-[4] w-full max-h-full absolute"

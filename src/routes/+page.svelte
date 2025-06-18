@@ -7,6 +7,11 @@
     import Partner from "$lib/components/custom/intro/Partner.svelte";
     import Address from "$lib/components/custom/Address.svelte";
     import MenuMobile from "$lib/components/custom/MenuMobile.svelte";
+    import { project2Store } from "$lib/stores/project";
+    import { get } from "svelte/store";
+    // TODO: uncomment when API is available
+    // import { page } from "$app/state";
+    const projects = get(project2Store);
 
     let menuOpen = false;
     let toggleMenu = () => {
@@ -19,7 +24,7 @@
     <div id="app-inner" class="flex-1 overflow-auto">
         <TopHeader {toggleMenu} />
         <Banner />
-        <ProjectsGallery autoLoad={false} />
+        <ProjectsGallery {projects} autoLoad={false} />
         <AboutContact />
         <Partner />
         <Address />

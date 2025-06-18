@@ -1,12 +1,29 @@
-<script>
+<script lang="ts">
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
+    export let data;
+    console.log(data);
+    async function handleSubmit(e: SubmitEvent): Promise<void> {
+        const formData = new FormData(e.currentTarget as HTMLFormElement);
+        const res = await fetch("/login", {
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                username: formData.get("username")?.toString(),
+                password: formData.get("password")?.toString(),
+            }),
+            method: "POST",
+        }).then((r) => r.json());
+        if (res.status != 200) alert(res.message);
+        localStorage.setItem("at", res.data.at);
+    }
 </script>
 
 <div class="flex min-h-screen items-center justify-center bg-background">
     <div class="w-full max-w-md space-y-8 rounded-lg bg-card p-8 shadow-lg">
         <h1 class="text-3xl font-bold text-center text-foreground">Login</h1>
-        <form method="POST" action="/login?/login" class="space-y-6">
+        <form on:submit|preventDefault={handleSubmit} class="space-y-6">
             <div class="space-y-2">
                 <Input
                     id="username"
