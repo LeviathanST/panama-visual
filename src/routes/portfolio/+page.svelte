@@ -6,6 +6,9 @@
     import Contact from "$lib/components/custom/portfolio/Contact.svelte";
     import TopHeader from "$lib/components/custom/portfolio/TopHeader.svelte";
     import ProjectsGallery from "$lib/components/custom/ProjectsGallery.svelte";
+    import { project2Store } from "$lib/stores/project";
+    import { get } from "svelte/store";
+    const projects = get(project2Store);
 
     let menuOpen = false;
     let toggleMenu = () => {
@@ -26,7 +29,7 @@
         <div class="w-full max-[767px]:hidden">
             <MenuOuter />
         </div>
-        <ProjectsGallery />
+        <ProjectsGallery {projects} />
         <Contact />
         <Address />
         <Footer />
