@@ -72,7 +72,7 @@
                             class="social flex justify-center max-[767px]:mb-[30px]"
                         >
                             <a
-                                href="https://www.facebook.com/eclipspictures/"
+                                href="https://www.facebook.com/profile.php?id=100092361582680"
                                 class="transition-opacity duration-200 mr-[12px] w-[75px] h-[50px] border-[2px] border-solid border-[hsla(0,0%,100%,0.1)] flex items-center justify-center opacity-50 hover:border-[hsla(0,0%,100%,0.5)] hover:opacity-100"
                             >
                                 <img
@@ -80,12 +80,6 @@
                                     src="/images/facebook-icon.png"
                                     alt=""
                                 />
-                            </a>
-                            <a
-                                href="https://www.youtube.com/VySlash"
-                                class="transition-opacity duration-200 mr-[12px] w-[75px] h-[50px] border-[2px] border-solid border-[hsla(0,0%,100%,0.1)] flex items-center justify-center opacity-50 hover:border-[hsla(0,0%,100%,0.5)] hover:opacity-100"
-                            >
-                                <img src="/images/youtube-icon.png" alt="" />
                             </a>
                         </div>
                         <div class="see-more w-[233.117px] h-[50px]">
