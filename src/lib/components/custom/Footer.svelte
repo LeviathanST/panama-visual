@@ -38,14 +38,11 @@
             class="social flex max-[767px]:row-start-1 max-[767px]:col-start-2 max-[767px]:justify-self-end
             max-[767px]:gap-2 max-[767px]:items-center"
         >
-            <a href="https://www.facebook.com/eclipspictures/">
+            <a href="https://www.facebook.com/profile.php?id=100092361582680">
                 <img
                     src="/images/footer_ico_facebook.png"
                     alt="facebook-icon"
                 />
-            </a>
-            <a href="https://www.youtube.com/VySlash">
-                <img src="/images/footer_ico_youtube.png" alt="youtube-icon" />
             </a>
         </div>
     </div>
