@@ -70,12 +70,12 @@ let mappingObject = {
         'vi': 'Năm 2018, ý tưởng đặt tên Panama được hình thành từ tên công ty của gia đình với mục tiêu tiếp nối những thành tựu bước đầu.'
     },
     'ABOUT_TEXT_2': {
-        'en': `After 3 years of operation, accumulating experiences and knowledge, September 2021, Tran Thi Loc & Huynh Khanh Huy decided to establish a company with the same name as the slogan "The simplicity is the ultimate" -Leonardo Davinci. Therefore, Panama products are always aimed at concise, concise but do not reduce efficiency for customers. With what have been and will do, the main product is our voice during Panama's operation.`,
-        'vi': 'Sau 3 năm hoạt động, tích lũy kinh nghiệm và kiến thức, tháng 9/2021, Trần Thị Lộc & Huỳnh Khánh Huy quyết định thành lập công ty cùng tên với slogan "Sự đơn giản là tối thượng" - Leonardo Davinci. Vì vậy, các sản phẩm của Panama luôn hướng đến sự súc tích, súc tích nhưng không làm giảm hiệu quả cho khách hàng. Với những gì đã và sẽ làm, sản phẩm chính là tiếng nói của chúng tôi trong quá trình hoạt động của Panama.'
+        'en': `After 3 years of operation, accumulating experiences and knowledge, September 2021, Tran Thi Loc & Huynh Khanh Huy decided to establish a company with the same name as the slogan "The simplicity is the ultimate" -Leonardo Davinci. Therefore, Panama products are always aimed at concise, concise but do not reduce efficiency for customers. `,
+        'vi': 'Sau 3 năm hoạt động, tích lũy kinh nghiệm và kiến thức, tháng 9/2021, Trần Thị Lộc & Huỳnh Khánh Huy quyết định thành lập công ty cùng tên với slogan "Sự đơn giản là tối thượng" - Leonardo Davinci. Vì vậy, các sản phẩm của Panama luôn hướng đến sự súc tích, súc tích nhưng không làm giảm hiệu quả cho khách hàng. '
     },
     'ABOUT_TEXT_3': {
-        'en': 'With what has been, is being and will be done, the product is our voice throughout Eclips Pictures\' operation.',
-        'vi': 'Với những gì đã, đang và sẽ làm, sản phẩm chính là tiếng nói của chúng tôi trong suốt quá trình hoạt động của Eclips Pictures.'
+        'en': "With what have been and will do, the main product is our voice during Panama's operation.",
+        'vi': 'Với những gì đã và sẽ làm, sản phẩm chính là tiếng nói của chúng tôi trong quá trình hoạt động của Panama.'
     },
     'LEARN_MORE': {
         'en': 'LEARN MORE',
