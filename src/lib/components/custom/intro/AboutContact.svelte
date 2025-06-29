@@ -93,9 +93,17 @@
                     min-[1200px]:w-[50%]
 
                     min-[768px]:w-[100%]
-                    min-[768px]:h-[60vw]
+                    min-[768px]:h-[50vw]
+
+                    flex
+                    justify-center
                     "
                 >
+                    <img
+                        class="w-auto h-[30rem]"
+                        src="/images/bg-contact.jpg"
+                        alt="contact-bg"
+                    />
                     <!-- <video -->
                     <!--     class="max-[1199px]:h-full max-[1199px]:w-full" -->
                     <!--     autoplay -->
