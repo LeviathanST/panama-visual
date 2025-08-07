@@ -1,24 +1,21 @@
-import { browser } from "$app/environment";
 import { env } from "$env/dynamic/private";
 import { redirect, type Handle } from "@sveltejs/kit";
-import { AsyncLocalStorage } from "node:async_hooks";
 
 const protectedRoutes = ["/edit"];
 
 export const handle: Handle = async ({ event, resolve }) => {
-    const authHeader = event.cookies.get('Authorization');
+    const at = event.cookies.get("at");
     // TODO: refresh token
-    // const res = await fetch(env.BACKEND_URL + "/verify", {
-    //     headers: {
-    //         "Authorization": "Bearer " + authHeader,
-    //     },
-    // });
-    const res = {
-        status: 200
-    };
+    const res = await fetch(env.BACKEND_URL + "/verify", {
+        headers: {
+            "Authorization": "Bearer " + at,
+        },
+    });
     protectedRoutes.forEach(route => {
-        if (event.url.pathname.startsWith(route) && res.status != 200 && res.status != 204) {
-            throw redirect(303, "/")
+        if (event.url.pathname.startsWith(route)) {
+            if (!at) throw redirect(303, "/")
+            if (res.status != 200 && res.status != 204)
+                throw redirect(303, "/")
         }
     })
     const response = await resolve(event);
