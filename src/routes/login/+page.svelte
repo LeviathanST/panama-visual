@@ -1,11 +1,9 @@
 <script lang="ts">
     import { Button } from "$lib/components/ui/button";
     import { Input } from "$lib/components/ui/input";
-    export let data;
-    console.log(data);
     async function handleSubmit(e: SubmitEvent): Promise<void> {
         const formData = new FormData(e.currentTarget as HTMLFormElement);
-        const res = await fetch("/login", {
+        const res = await fetch("/api/login", {
             headers: {
                 "Content-Type": "application/json",
             },
@@ -15,8 +13,7 @@
             }),
             method: "POST",
         }).then((r) => r.json());
-        if (res.status != 200) alert(res.message);
-        localStorage.setItem("at", res.data.at);
+        if (res.status != 200) return alert(res.message);
     }
 </script>
 

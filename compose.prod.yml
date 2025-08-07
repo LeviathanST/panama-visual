@@ -1,6 +1,0 @@
-services:
-  app:
-    image: leviathanst/eclipsed-pictures:latest
-    ports:
-      - "4545:3000"
-

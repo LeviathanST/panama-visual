@@ -9,9 +9,10 @@
     import MenuMobile from "$lib/components/custom/MenuMobile.svelte";
     import { project2Store } from "$lib/stores/project";
     import { get } from "svelte/store";
+    import { page } from "$app/state";
     // TODO: uncomment when API is available
     // import { page } from "$app/state";
-    const projects = get(project2Store);
+    const projects = page.data.project.data;
 
     let menuOpen = false;
     let toggleMenu = () => {

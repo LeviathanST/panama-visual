@@ -1,6 +1,5 @@
 <script lang="ts">
     import ProjectList from "./ProjectList.svelte";
-    import ProjectEdit from "./ProjectEdit.svelte";
     import {
         Card,
         CardHeader,
@@ -8,10 +7,10 @@
         CardDescription,
         CardContent,
     } from "$lib/components/ui/card";
-    import type { Project } from "$lib/stores/project2";
     import { writable } from "svelte/store";
     import AddProjectForm from "./AddProjectForm.svelte";
     import EditProjectForm from "./EditProjectForm.svelte";
+    import type { Project } from "$lib/stores/project";
     let { projects = [] } = $props();
     let showAddForm = $state(false);
 

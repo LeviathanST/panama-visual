@@ -2,6 +2,16 @@ services:
   app:
     build:
       context: .
+    environment:
+      BACKEND_URL: ${BACKEND_URL}
+      ZIPLINE_URL: ${ZIPLINE_URL}
+      ZIPLINE_TOKEN: ${ZIPLINE_TOKEN}
+      BODY_SIZE_LIMIT: ${BODY_SIZE_LIMIT}
+      ORIGIN: ${ORIGIN}
     ports:
-      - "4545:3000"
-
+      - ${PORT}:3000
+    networks:
+      - panama
+networks:
+  panama:
+    external: true

@@ -10,9 +10,11 @@ function genFilePath(p: string, id: number, max: number): string[] {
     return imagePaths
 }
 
+/// A type sending to server
 export type RequestProject = {
     id: number;
     title: string;
+    thumbnail: string
     category: string;
     images?: FileList;
     time?: string;
@@ -20,25 +22,25 @@ export type RequestProject = {
     description?: string;
 };
 
+/// A type is used to display a project
 export type Project = {
     id: number;
     title: string;
     category: number;
+    thumbnail: string,
     images?: string[];
-    time?: string;
-    video?: {
-        url: string,
-        thumbnail: string,
-    },
+    time?: { url: string };
+    video?: string,
+
     description?: string;
 };
 
 const prefixPathImage = 'images/xlarge/projects/';
-
 const projects2: Project[] = [
     {
         id: 1,
         title: "Hiệp Hội Thép Việt Nam - Vươn Tầm Hiện Đại ",
+        thumbnail: "images/xlarge/projects/id/project1.jpg",
         category: 1,
         images: genFilePath("vs", 1, 4),
         description: ""
@@ -46,6 +48,7 @@ const projects2: Project[] = [
     {
         id: 2,
         title: 'LỄ KHAI MẠC LỄ HỘI QUÀ TẶNG DU LỊCH 2025 CHỦ ĐỀ "HÀ NỘI - ĐIỂM ĐẾN DI SẢN THẾ GIỚI',
+        thumbnail: "images/xlarge/projects/id/project1.jpg",
         category: 1,
         images: genFilePath("vs", 2, 15),
         description: ""
@@ -53,6 +56,7 @@ const projects2: Project[] = [
     {
         id: 3,
         title: 'Chương Trình Đặc Biệt Kỷ Niệm 95 Năm Thành Lập ĐẢNG BỘ ĐÀ NẴNG VÀ 50 năm Ngày GIẢI PHÓNG ĐÀ NẴNG',
+        thumbnail: "images/xlarge/projects/id/project1.jpg",
         category: 1,
         images: genFilePath("vs", 3, 10),
         description: `
@@ -63,6 +67,7 @@ const projects2: Project[] = [
     {
         id: 4,
         title: `Hội Nghị Khách Hàng Syngenta - Đại Lý Bán Lẻ 2025`,
+        thumbnail: "images/xlarge/projects/id/project1.jpg",
         category: 1,
         images: genFilePath("vs", 4, 4),
         description: `
@@ -72,6 +77,7 @@ const projects2: Project[] = [
     {
         id: 5,
         title: `Chương Trình Nghệ Thuật - ✨VIC GRAND SQUARE✨`,
+        thumbnail: "images/xlarge/projects/id/project1.jpg",
         category: 1,
         images: genFilePath("vs", 5, 5),
         description: ``
@@ -79,6 +85,7 @@ const projects2: Project[] = [
     {
         id: 6,
         title: `Sum Họp 2025 TP Bank hai miền Bắc Nam🥰🥰`,
+        thumbnail: "images/xlarge/projects/id/project1.jpg",
         category: 1,
         images: genFilePath("vs", 6, 16),
         description: ``
@@ -86,6 +93,7 @@ const projects2: Project[] = [
     {
         id: 7,
         title: `Lễ hội Áo Dài - Đà Lạt Hoa & Em 💚`,
+        thumbnail: "images/xlarge/projects/id/project1.jpg",
         category: 1,
         images: genFilePath("vs", 7, 4),
         description: `Không chỉ là sự kiện đơn thuần, mà là niềm tự hào, là minh chứng cho tình yêu và sự gắn bó bền chặt với vẻ đẹp truyền thống Việt Nam.`
@@ -93,6 +101,7 @@ const projects2: Project[] = [
     {
         id: 8,
         title: `Hành trình khát vọng ❤️- Trực tiếp VTV1 `,
+        thumbnail: "images/xlarge/projects/id/project1.jpg",
         category: 1,
         images: genFilePath("vs", 8, 11),
         description: ``
@@ -100,6 +109,7 @@ const projects2: Project[] = [
     {
         id: 9,
         title: `Key Moment Lễ Kỷ Niệm 20 năm Đồng Hành & Phát Triển Syngenta Việt Nam`,
+        thumbnail: "images/xlarge/projects/id/project1.jpg",
         category: 1,
         images: genFilePath("vs", 9, 4),
         description: ``
@@ -107,6 +117,7 @@ const projects2: Project[] = [
     {
         id: 10,
         title: `VINCOM MALLIDAY`,
+        thumbnail: "images/xlarge/projects/id/project1.jpg",
         category: 1,
         images: genFilePath("vs", 10, 11),
         description: ``
@@ -114,6 +125,7 @@ const projects2: Project[] = [
     {
         id: 11,
         title: `👋Countdown Biên Hoà Chào năm mới 2024🎉🧨`,
+        thumbnail: "images/xlarge/projects/id/project1.jpg",
         category: 1,
         images: genFilePath("vs", 11, 9),
         description: ``
@@ -123,14 +135,6 @@ const projects2: Project[] = [
 
 const internalProject = writable<Project[]>(projects2);
 export const project2Store = readable<Project[]>(projects2);
-
-export function addProject(project: Omit<Project, 'id'>) {
-    console.log(project);
-}
-
-export function updateProject(id: number, updated: Partial<Project>) {
-    alert("This feature is not available")
-}
 
 export function deleteProject(id: number) {
     internalProject.update((current) => current.filter((project) => project.id !== id));

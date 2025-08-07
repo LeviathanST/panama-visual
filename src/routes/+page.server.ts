@@ -2,11 +2,11 @@ import { env } from "$env/dynamic/private";
 import { fail, type Actions } from "@sveltejs/kit";
 
 export const load = async ({ fetch }) => {
-    // const res = await fetch(env.BACKEND_URL + "/projects");
-    // const json = await res.json();
-    // return {
-    //     project: json,
-    // };
+    const res = await fetch(env.BACKEND_URL + "/projects");
+    const json = await res.json();
+    return {
+        project: json,
+    };
 };
 
 function parseFilename(url: string): string | null {
@@ -78,8 +78,7 @@ async function uploadFile(file: File, fetch: typeof globalThis.fetch): Promise<s
 export const actions: Actions = {
     addProject: async ({ request, cookies, fetch }) => {
         try {
-
-            const at = cookies.get("Authorization");
+            const at = cookies.get("at");
             if (!at) {
                 return fail(401, { error: "Authentication token missing" });
             }
@@ -103,11 +102,14 @@ export const actions: Actions = {
             const images = formData.getAll("images") as File[];
             const video = formData.get("video") as File | null;
             const thumbnail = formData.get("thumbnail") as File | null;
-            if (video && video.size > 0) {
-                if (!(thumbnail && thumbnail.size > 0)) {
-                    return fail(400, { error: "Thumbnail is required with video" });
-                }
+            if (!(thumbnail && thumbnail.size > 0)) {
+                return fail(400, { error: "Thumbnail is required!" });
             }
+
+
+            let thumbnailId: string | null = null;
+            thumbnailId = await uploadFile(thumbnail, fetch);
+            if (!thumbnailId) throw new Error("Failed to upload thumbnail");
 
             const imageIds: string[] = [];
             for (const file of images) {
@@ -119,21 +121,20 @@ export const actions: Actions = {
             }
 
             let videoId: string | null = null;
-            let thumbnailId: string | null = null;
             if (video && thumbnail && video.size > 0 && thumbnail.size > 0) {
                 videoId = await uploadFile(video, fetch);
                 if (!videoId) throw new Error("Failed to upload video");
-                thumbnailId = await uploadFile(thumbnail, fetch);
-                if (!thumbnailId) throw new Error("Failed to upload thumbnail");
+
             }
 
             const projectData = {
                 title,
+                thumbnail: thumbnailId,
                 category,
                 description: description || "",
                 time: time || null,
                 image_urls: imageIds,
-                video: videoId ? { video_url: videoId, thumbnail_url: thumbnailId } : null,
+                video: videoId ? { video_url: videoId } : null,
             };
 
             const response = await fetch(env.BACKEND_URL + "/projects", {
@@ -147,6 +148,7 @@ export const actions: Actions = {
 
             if (!response.ok) {
                 const json = await response.json();
+                console.log(`Error: ${json.error}`);
                 throw new Error(json.message || "Failed to create project");
             }
 
@@ -162,7 +164,7 @@ export const actions: Actions = {
 
     editProject: async ({ request, cookies, fetch }) => {
         try {
-            const at = cookies.get("Authorization");
+            const at = cookies.get("at");
             if (!at) {
                 return fail(401, { error: "Authentication token missing" });
             }
@@ -173,10 +175,12 @@ export const actions: Actions = {
             });
             if (!verify.ok) return fail(400, { error: "Invalid token" });
             const formData = await request.formData();
+            console.log(formData);
             const projectId = formData.get("project_id")?.toString();
             const title = formData.get("title")?.toString();
             const category = formData.get("category")?.toString();
             const description = formData.get("description")?.toString();
+            const thumbnailUrl = formData.get("thumbnail_url")?.toString();
             const time = formData.get("time")?.toString();
 
             if (!projectId || !title || !category) {
@@ -186,7 +190,7 @@ export const actions: Actions = {
             // Extract deleted media
             const deletedImageUrls = formData.getAll("deleted_image_urls") as string[];
             const deletedVideo = formData.get("deleted_video")?.toString() || null;
-            const thumbnailUrl = formData.get("thumbnail_url")?.toString() || null;
+            const deletedThumbnail = formData.get("deleted_thumbnail")?.toString() || null;
 
             // Attempt to delete files and track successes
             const successfullyDeletedImageUrls: string[] = [];
@@ -204,26 +208,22 @@ export const actions: Actions = {
                 try {
                     await removeFile(deletedVideo, fetch);
                     successfullyDeletedVideo = deletedVideo;
-                    if (thumbnailUrl) {
-                        try {
-                            await removeFile(thumbnailUrl, fetch);
-                        } catch (error) {
-                            console.warn(`Failed to delete thumbnail ${thumbnailUrl}: `, error);
-                        }
-                    }
                 } catch (error) {
                     console.warn(`Failed to delete video ${deletedVideo}: `, error);
+                }
+            }
+            if (deletedThumbnail) {
+                try {
+                    await removeFile(deletedThumbnail, fetch);
+                } catch (error) {
+                    console.warn(`Failed to delete thumbnail ${deletedThumbnail}: `, error);
                 }
             }
 
             // Extract and upload new files
             const images = formData.getAll("images") as File[];
             const video = formData.get("video") as File | null;
-            const thumbnail = formData.get("thumbnail") as File | null;
-
-            if (video && !thumbnail) {
-                return fail(400, { error: "Thumbnail is required with video" });
-            }
+            const thumbnailFile = formData.get("thumbnail") as File | null;
 
             const insertedImageUrls: string[] = [];
             for (const file of images) {
@@ -236,10 +236,13 @@ export const actions: Actions = {
 
             let insertedVideoId: string | null = null;
             let insertedThumbnailId: string | null = null;
-            if (video && thumbnail && video.size > 0 && thumbnail.size > 0) {
+            if (video && video.size > 0) {
                 insertedVideoId = await uploadFile(video, fetch);
                 if (!insertedVideoId) throw new Error("Failed to upload video");
-                insertedThumbnailId = await uploadFile(thumbnail, fetch);
+
+            }
+            if (thumbnailFile && thumbnailFile.size > 0) {
+                insertedThumbnailId = await uploadFile(thumbnailFile, fetch);
                 if (!insertedThumbnailId) throw new Error("Failed to upload thumbnail");
             }
 
@@ -247,16 +250,17 @@ export const actions: Actions = {
             const projectData = {
                 title,
                 category,
+                thumbnail: deletedThumbnail ? insertedThumbnailId : thumbnailUrl,
                 description: description || "",
                 time: time || null,
                 deleted_image_urls: successfullyDeletedImageUrls,
                 inserted_image_urls: insertedImageUrls,
                 deleted_video: successfullyDeletedVideo,
-                inserted_video: insertedVideoId ? { video_url: insertedVideoId, thumbnail_url: insertedThumbnailId } : null,
+                inserted_video: insertedVideoId ? { video_url: insertedVideoId } : null,
             };
-
-
             console.log(projectData)
+
+
 
             const response = await fetch(env.BACKEND_URL + `/projects/${projectId}`, {
                 method: "PUT",
@@ -269,6 +273,7 @@ export const actions: Actions = {
 
             if (!response.ok) {
                 const json = await response.json();
+                console.log(json.error)
                 throw new Error(json.message || "Failed to update project");
             }
 
