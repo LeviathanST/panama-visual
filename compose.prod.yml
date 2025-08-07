@@ -1,0 +1,15 @@
+services:
+  app:
+    image: leviathanst/panama-visual:latest
+    environment:
+      BACKEND_URL: ${BACKEND_URL}
+      ZIPLINE_URL: ${ZIPLINE_URL}
+      ZIPLINE_TOKEN: ${ZIPLINE_TOKEN}
+      BODY_SIZE_LIMIT: ${BODY_SIZE_LIMIT}
+      ORIGIN: ${ORIGIN}
+    ports:
+      - ${PORT}:3000
+    networks:
+      - fe
+  networks:
+    fe:
