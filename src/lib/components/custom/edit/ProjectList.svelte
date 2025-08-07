@@ -92,19 +92,11 @@
                     class="overflow-hidden bg-[hsl(var(--card))] border-[hsl(var(--border))] shadow-lg hover:shadow-xl transition-shadow duration-200"
                 >
                     <CardContent class="p-0">
-                        {#if project.images && project.images.length > 0}
-                            <img
-                                src={project.images[0]}
-                                alt={project.title}
-                                class="w-full h-48 object-cover"
-                            />
-                        {:else if project.video?.thumbnail}
-                            <img
-                                src={project.video.thumbnail}
-                                alt={project.title + " thumbnail"}
-                                class="w-full h-48 object-cover"
-                            />
-                        {/if}
+                        <img
+                            src={project.thumbnail}
+                            alt={project.title + " thumbnail"}
+                            class="w-full h-48 object-cover"
+                        />
                         <div class="p-4 space-y-2">
                             <h3
                                 class="text-lg font-semibold text-[hsl(var(--card-foreground))] truncate"

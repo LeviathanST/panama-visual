@@ -22,7 +22,7 @@
     const categories = get(categoryStore);
     $: currentCategory = $readCurrentCategory;
     $: filteredProjects = projects.filter(
-        (p) => p.category === currentCategory,
+        (p) => getIdFromName(p.category) === currentCategory,
     );
     $: totalProjects = filteredProjects.length;
     $: hasMore = visibleCount < totalProjects;
@@ -210,15 +210,9 @@
                 on:click={(e) => handleProjectClick(e, project)}
             >
                 <div class="image-wrapper w-full h-full">
-                    {#if project.video?.thumbnail}
+                    {#if project.thumbnail}
                         <img
-                            src={project.video.thumbnail}
-                            class="img"
-                            alt={project.title}
-                        />
-                    {:else if project.images?.[0]}
-                        <img
-                            src={project.images[0]}
+                            src={project.thumbnail}
                             class="img"
                             alt={project.title}
                         />

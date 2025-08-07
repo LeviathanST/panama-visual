@@ -9,6 +9,7 @@
     // Initialize form data
     let formData: RequestProject = {
         title: "",
+        thumbnail: "",
         category: "PANAMA_VISUAL",
         description: "",
         time: "",
@@ -35,6 +36,7 @@
     function resetForm() {
         formData = {
             title: "",
+            thumbnail: "",
             category: "PANAMA_VISUAL",
             description: "",
             time: "",
@@ -255,7 +257,7 @@
         </div>
 
         <div class="form-group">
-            <label for="thumbnail" class="form-label">Video Thumbnail</label>
+            <label for="thumbnail" class="form-label">Thumbnail</label>
             <input
                 type="file"
                 id="thumbnail"

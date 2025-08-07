@@ -4,13 +4,14 @@
     import { enhance } from "$app/forms";
     import { invalidateAll } from "$app/navigation";
 
-    export let project: Project | null = null;
-    export let onReset: (() => void) | undefined = undefined;
+    export let project: Project;
+    export let onReset: () => void;
 
     // Initialize form data
     let formData: RequestProject = {
         title: "",
         category: "PANAMA_VISUAL",
+        thumbnail: undefined,
         description: "",
         time: "",
         images: undefined,
@@ -22,6 +23,7 @@
     let imageUrls: string[] = []; // Display image URLs
     let videoUrl: string | null = null; // Display video URL
     let thumbnailUrl: string | null = null; // Display thumbnail URL
+    let deletedThumbnail: string | null = null; // Deleted thumbnail URL
     let deletedImageUrls: string[] = []; // Deleted image URLs
     let deletedVideoUrl: string | null = null; // Deleted video URL
     let videoProgress: number = 0; // Video upload progress
@@ -36,9 +38,9 @@
 
     // Update form when project changes
     $: if (project) {
-        console.log("Project updated:", project);
         formData = {
             title: project.title || "",
+            thumbnail: undefined,
             category: project.category || "PANAMA_VISUAL",
             description: project.description || "",
             time: project.time || "",
@@ -47,7 +49,7 @@
         };
         imageUrls = project.images ? [...project.images] : [];
         videoUrl = project.video?.url || null;
-        thumbnailUrl = project.video?.thumbnail || null;
+        thumbnailUrl = project.thumbnail || null;
         images = null;
         videoFile = null;
         thumbnailFile = null;
@@ -64,6 +66,7 @@
     function resetForm() {
         formData = {
             title: "",
+            thumbnail: undefined,
             category: "PANAMA_VISUAL",
             description: "",
             time: "",
@@ -76,6 +79,7 @@
         imageUrls = [];
         videoUrl = null;
         thumbnailUrl = null;
+        deletedThumbnail = null;
         deletedImageUrls = [];
         deletedVideoUrl = null;
         videoProgress = 0;
@@ -113,13 +117,8 @@
         if (videoUrl && !project?.video?.url) {
             URL.revokeObjectURL(videoUrl);
         }
-        if (thumbnailUrl && !project?.video?.thumbnail) {
-            URL.revokeObjectURL(thumbnailUrl);
-        }
         videoUrl = null;
-        thumbnailUrl = null;
         videoFile = null;
-        thumbnailFile = null;
         videoProgress = 0;
     }
 
@@ -154,10 +153,6 @@
         thumbnailUrl = thumbnailFile
             ? URL.createObjectURL(thumbnailFile)
             : thumbnailUrl;
-        // Explicitly preserve existing video if no new video is selected
-        if (!videoFile && project?.video?.url) {
-            videoUrl = project.video.url;
-        }
     }
 </script>
 
@@ -167,12 +162,9 @@
         action="/?/editProject"
         method="POST"
         enctype="multipart/form-data"
-        use:enhance={({ formData }) => {
+        use:enhance={() => {
             isSubmitting = true;
-            // Append existing video URL if thumbnail is selected but no new video file
-            if (thumbnailFile && !videoFile && project?.video?.url) {
-                formData.append("existing_video_url", project.video.url);
-            }
+
             return async ({ result }) => {
                 isSubmitting = false;
                 if (result.type === "success") {
@@ -190,8 +182,16 @@
         {#each deletedImageUrls as url}
             <input type="hidden" name="deleted_image_urls" value={url} />
         {/each}
+        <input type="hidden" name="thumbnail_url" value={project.thumbnail} />
         {#if deletedVideoUrl}
             <input type="hidden" name="deleted_video" value={deletedVideoUrl} />
+        {/if}
+        {#if deletedThumbnail}
+            <input
+                type="hidden"
+                name="deleted_thumbnail"
+                value={deletedThumbnail}
+            />
         {/if}
 
         <div class="form-group">
@@ -318,7 +318,7 @@
         </div>
 
         <div class="form-group">
-            <label for="thumbnail" class="form-label">Video Thumbnail</label>
+            <label for="thumbnail" class="form-label">Thumbnail</label>
             <input
                 type="file"
                 id="thumbnail"
@@ -334,28 +334,21 @@
                         alt="Thumbnail Preview"
                         class="preview-thumbnail"
                     />
-                    {#if !videoUrl}
-                        <button
-                            type="button"
-                            class="remove-button"
-                            on:click={() => {
-                                if (
-                                    thumbnailUrl &&
-                                    !project?.video?.thumbnail
-                                ) {
-                                    URL.revokeObjectURL(thumbnailUrl);
-                                }
-                                thumbnailFile = null;
-                                thumbnailUrl = null;
-                            }}
-                        >
-                            ×
-                        </button>
-                    {/if}
+                    <button
+                        type="button"
+                        class="remove-button"
+                        on:click={() => {
+                            if (thumbnailUrl && !project?.thumbnail) {
+                                URL.revokeObjectURL(thumbnailUrl);
+                            }
+                            deletedThumbnail = thumbnailUrl;
+                            thumbnailFile = null;
+                            thumbnailUrl = null;
+                        }}
+                    >
+                        X
+                    </button>
                 </div>
-                <p class="file-info">
-                    Thumbnail: {thumbnailFile?.name || "Existing thumbnail"}
-                </p>
             {/if}
         </div>
 
