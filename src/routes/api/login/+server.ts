@@ -1,6 +1,7 @@
 import { env } from "$env/dynamic/private";
+import { type RequestHandler } from "@sveltejs/kit";
 
-export const POST = async ({ locals, cookies, request }) => {
+export const POST: RequestHandler = async ({ cookies, request, fetch }) => {
     const body = await request.json();
     const json = await fetch(env.BACKEND_URL + "/login", {
         body: JSON.stringify({
@@ -14,10 +15,7 @@ export const POST = async ({ locals, cookies, request }) => {
             status: json.status,
             headers: { 'Content-Type': 'application/json' },
         });
-    locals = {
-        user: json.data.at
-    }
-    cookies.set('Authorization', json.data.at, {
+    cookies.set('at', json.data.at, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         path: '/',
@@ -27,4 +25,5 @@ export const POST = async ({ locals, cookies, request }) => {
         headers: { 'Content-Type': 'application/json' },
     });
 }
+
 
