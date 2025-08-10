@@ -1,4 +1,6 @@
 import { env } from "$env/dynamic/private";
+import { BACKEND_URL } from "$env/static/private";
+import { removeFile } from "$lib";
 import { fail, type Actions } from "@sveltejs/kit";
 
 export const load = async ({ fetch }) => {
@@ -8,49 +10,6 @@ export const load = async ({ fetch }) => {
         project: json,
     };
 };
-
-function parseFilename(url: string): string | null {
-    try {
-        const parsedUrl = new URL(url);
-        const pathname = parsedUrl.pathname;
-        const segments = pathname.split('/').filter(segment => segment.length > 0);
-        const filename = segments[segments.length - 1];
-        if (!filename) {
-            return null;
-        }
-        return filename;
-    } catch (error) {
-        console.error("Invalid URL:", error);
-        return null;
-    }
-}
-
-async function removeFile(url: string, fetch: typeof globalThis.fetch): Promise<void> {
-    const filename = parseFilename(url);
-    if (!filename) {
-        throw new Error("Invalid file URL");
-    }
-    console.log(env.ZIPLINE_URL + "/user/files/" + filename)
-    const res = await fetch(env.ZIPLINE_URL + "/user/files/" + filename, {
-        method: "GET",
-        headers: {
-            Authorization: env.ZIPLINE_TOKEN,
-        },
-    }).then(r => r.json());
-    const id = res.id;
-
-    const response = await fetch(env.ZIPLINE_URL + "/user/files/" + id, {
-        method: "DELETE",
-        headers: {
-            Authorization: env.ZIPLINE_TOKEN,
-        },
-    });
-
-    if (!response.ok) {
-        console.error("Delete file failed with status:", response.status);
-        throw new Error("Failed to delete file");
-    }
-}
 
 async function uploadFile(file: File, fetch: typeof globalThis.fetch): Promise<string | null> {
     if (!file || file.size === 0) {
@@ -175,7 +134,6 @@ export const actions: Actions = {
             });
             if (!verify.ok) return fail(400, { error: "Invalid token" });
             const formData = await request.formData();
-            console.log(formData);
             const projectId = formData.get("project_id")?.toString();
             const title = formData.get("title")?.toString();
             const category = formData.get("category")?.toString();
@@ -285,5 +243,47 @@ export const actions: Actions = {
             console.error("Error updating project:", error);
             return fail(500, { error: error instanceof Error ? error.message : "Server error" });
         }
+    },
+
+    deleteProject: async ({ request, cookies, fetch }) => {
+        const at = cookies.get("at");
+        if (!at) {
+            return fail(401, { error: "Authentication token missing" });
+        }
+        const verify = await fetch(env.BACKEND_URL + `/verify`, {
+            headers: {
+                Authorization: `Bearer ${at}`,
+            },
+        });
+        if (!verify.ok) return fail(400, { error: "Invalid token" });
+        const project = await request.json();
+        for (const url of project.images) {
+            try {
+                await removeFile(url, fetch);
+            } catch (error) {
+                console.warn(`Failed to delete image ${url}: `, error);
+            }
+        }
+        if (project.video.url) {
+            try {
+                await removeFile(project.video.url, fetch);
+            } catch (error) {
+                console.warn(`Failed to delete video ${project.video.url}: `, error);
+            }
+        }
+        if (project.thumbnail) {
+            try {
+                await removeFile(project.thumbnail, fetch);
+            } catch (error) {
+                console.warn(`Failed to delete thumbnail ${project.thumbnail}: `, error);
+            }
+        }
+
+        await fetch(BACKEND_URL + "/projects/" + project.id, {
+            headers: {
+                "Authorization": "Bearer" + at,
+            },
+            method: "DELETE",
+        });
     },
 };
