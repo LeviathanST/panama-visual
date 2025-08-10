@@ -2,7 +2,7 @@
     import { Button } from "$lib/components/ui/button";
     import { Card, CardContent } from "$lib/components/ui/card";
     import { Input } from "$lib/components/ui/input";
-    import { deleteProject, type Project } from "$lib/stores/project";
+    import { type Project } from "$lib/stores/project";
     import { getIdFromName } from "$lib/stores/category";
     import { cn } from "$lib/utils";
 
@@ -40,6 +40,18 @@
 
     function setCategory(value: number | null) {
         selectedCategory = value;
+    }
+
+    async function deleteProject(project: Project) {
+        console.log("lol");
+        const res = await fetch("/api/projects", {
+            method: "DELETE",
+            body: JSON.stringify(project),
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+        if (res.status != 200) alert(res.status);
     }
 </script>
 
@@ -125,7 +137,7 @@
                                     variant="destructive"
                                     size="sm"
                                     class="bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))] hover:bg-[hsl(var(--destructive)/0.9)]"
-                                    onclick={() => deleteProject(project.id)}
+                                    onclick={() => deleteProject(project)}
                                 >
                                     Delete
                                 </Button>
