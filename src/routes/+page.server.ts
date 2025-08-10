@@ -1,5 +1,4 @@
 import { env } from "$env/dynamic/private";
-import { BACKEND_URL } from "$env/static/private";
 import { removeFile } from "$lib";
 import { fail, type Actions } from "@sveltejs/kit";
 
