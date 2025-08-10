@@ -27,7 +27,7 @@ export const DELETE: RequestHandler = async ({ request, cookies, fetch }) => {
             console.warn(`Failed to delete image ${url}: `, error);
         }
     }
-    if (project.video.url) {
+    if (project.video) {
         try {
             await removeFile(project.video.url, fetch);
         } catch (error) {
