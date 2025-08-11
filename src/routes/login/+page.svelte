@@ -14,6 +14,7 @@
             method: "POST",
         }).then((r) => r.json());
         if (res.status != 200) return alert(res.message);
+        window.location.href = "/edit";
     }
 </script>
 

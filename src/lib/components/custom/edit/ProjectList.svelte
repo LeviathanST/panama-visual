@@ -43,15 +43,17 @@
     }
 
     async function deleteProject(project: Project) {
-        console.log("lol");
-        const res = await fetch("/api/projects", {
-            method: "DELETE",
-            body: JSON.stringify(project),
-            headers: {
-                "Content-Type": "application/json",
-            },
-        });
-        if (res.status != 200) alert(res.status);
+        if (confirm(`Please confirm to delete project "${project.title}".`)) {
+            const res = await fetch("/api/projects", {
+                method: "DELETE",
+                body: JSON.stringify(project),
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if (res.status != 200) alert(res.status);
+            window.location.reload();
+        }
     }
 </script>
 
