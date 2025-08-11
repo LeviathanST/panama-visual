@@ -168,9 +168,7 @@
             return async ({ result }) => {
                 isSubmitting = false;
                 if (result.type === "success") {
-                    resetForm();
-                    if (onReset) onReset();
-                    await invalidateAll(); // Refresh data if needed
+                    window.location.reload();
                 } else if (result.type === "failure") {
                     errorMessage =
                         result.data?.error || "Failed to edit project";
