@@ -1,4 +1,4 @@
-import { BACKEND_URL } from "$env/static/private";
+import { env } from "$env/dynamic/private";
 import { fail } from '@sveltejs/kit';
 import type { Actions } from "../$types";
 import { removeFile, uploadFile } from "$lib";
@@ -23,7 +23,7 @@ export const actions: Actions = {
         if (!at) {
             return fail(401, { error: "Authentication token missing" });
         }
-        const verify = await fetch(BACKEND_URL + `/verify`, {
+        const verify = await fetch(env.BACKEND_URL + `/verify`, {
             headers: {
                 Authorization: `Bearer ${at}`,
             },
@@ -40,7 +40,7 @@ export const actions: Actions = {
 
         try {
             const src = await uploadFile(srcFile, fetch);
-            const res = await fetch(BACKEND_URL + "/sponsors", {
+            const res = await fetch(env.BACKEND_URL + "/sponsors", {
                 method: "POST",
                 headers: {
                     "Authorization": "Bearer " + at,
@@ -63,7 +63,7 @@ export const actions: Actions = {
         if (!at) {
             return fail(401, { error: "Authentication token missing" });
         }
-        const verify = await fetch(`${BACKEND_URL}/verify`, {
+        const verify = await fetch(`${env.BACKEND_URL}/verify`, {
             headers: { Authorization: `Bearer ${at}` },
         });
         if (!verify.ok) {
@@ -105,7 +105,7 @@ export const actions: Actions = {
             };
 
             // --- 5. SEND THE COMPLETE, UPDATED DATA TO THE BACKEND ---
-            const updateResponse = await fetch(`${BACKEND_URL}/sponsors/${id}`, {
+            const updateResponse = await fetch(`${env.BACKEND_URL}/sponsors/${id}`, {
                 method: 'PUT', // PUT is appropriate for replacing a resource with new data
                 headers: {
                     'Content-Type': 'application/json',
@@ -132,7 +132,7 @@ export const actions: Actions = {
         if (!at) {
             return fail(401, { error: "Authentication token missing" });
         }
-        const verify = await fetch(BACKEND_URL + `/verify`, {
+        const verify = await fetch(env.BACKEND_URL + `/verify`, {
             headers: {
                 Authorization: `Bearer ${at}`,
             },
@@ -148,7 +148,7 @@ export const actions: Actions = {
 
         try {
             await removeFile(src, fetch);
-            const res = await fetch(BACKEND_URL + "/sponsors/" + id, {
+            const res = await fetch(env.BACKEND_URL + "/sponsors/" + id, {
                 method: "DELETE",
                 headers: {
                     "Authorization": "Bearer " + at,
