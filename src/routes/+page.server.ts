@@ -1,37 +1,18 @@
 import { env } from "$env/dynamic/private";
-import { removeFile } from "$lib";
+import { removeFile, uploadFile } from "$lib";
 import { fail, type Actions } from "@sveltejs/kit";
 
 export const load = async ({ fetch }) => {
-    const res = await fetch(env.BACKEND_URL + "/projects");
-    const json = await res.json();
+    const projectsRes = await fetch(env.BACKEND_URL + "/projects");
+    const sponsorsRes = await fetch(env.BACKEND_URL + "/projects");
+
+    const json1 = await projectsRes.json();
+    const json2 = await sponsorsRes.json();
     return {
-        project: json,
+        project: json1,
+        sponsors: json2,
     };
 };
-
-async function uploadFile(file: File, fetch: typeof globalThis.fetch): Promise<string | null> {
-    if (!file || file.size === 0) {
-        console.error("No file provided!");
-        return null;
-    }
-    console.log(`File: ${file.name}, ${file.size} bytes, ${file.type} `);
-
-    const formData = new FormData();
-    formData.append("file", file);
-
-    try {
-        const response = await fetch("/api/upload", {
-            method: "POST",
-            body: formData,
-        });
-        const result = await response.json();
-        return result.files[0].url;
-    } catch (error) {
-        console.error("Error uploading file:", error);
-        throw error;
-    }
-}
 
 export const actions: Actions = {
     addProject: async ({ request, cookies, fetch }) => {
@@ -215,10 +196,6 @@ export const actions: Actions = {
                 deleted_video: successfullyDeletedVideo,
                 inserted_video: insertedVideoId ? { video_url: insertedVideoId } : null,
             };
-            console.log(projectData)
-
-
-
             const response = await fetch(env.BACKEND_URL + `/projects/${projectId}`, {
                 method: "PUT",
                 headers: {
