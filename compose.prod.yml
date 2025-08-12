@@ -11,5 +11,5 @@ services:
       - ${PORT}:3000
     networks:
       - fe
-  networks:
-    fe:
+networks:
+  fe:
