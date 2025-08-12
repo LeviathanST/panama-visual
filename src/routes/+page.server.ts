@@ -255,7 +255,7 @@ export const actions: Actions = {
             }
         }
 
-        await fetch(BACKEND_URL + "/projects/" + project.id, {
+        await fetch(env.BACKEND_URL + "/projects/" + project.id, {
             headers: {
                 "Authorization": "Bearer" + at,
             },
