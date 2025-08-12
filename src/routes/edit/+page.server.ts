@@ -4,8 +4,8 @@ import type { Actions } from "../$types";
 import { removeFile, uploadFile } from "$lib";
 
 export const load = async ({ }) => {
-    const projectRes = await fetch(BACKEND_URL + "/projects");
-    const sponsorRes = await fetch(BACKEND_URL + "/sponsors");
+    const projectRes = await fetch(env.BACKEND_URL + "/projects");
+    const sponsorRes = await fetch(env.BACKEND_URL + "/sponsors");
     console.log("reload");
 
     const projectJson = await projectRes.json();
