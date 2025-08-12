@@ -1,15 +1,14 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { itemReader as sponsorReader } from "$lib/stores/sponsor";
-    import { get } from "svelte/store";
+    import { type Sponsor } from "$lib/stores/sponsor";
 
-    const sponsors = get(sponsorReader);
+    let { sponsors = [] }: { sponsors: Sponsor[] } = $props();
 
     let allSponsors = [...sponsors, ...sponsors];
     let currentIndex = 0;
     let isPaused = false;
     const sponsorsPerView = 4;
-    let itemWidth = 0;
+    let itemWidth = $state(0);
     let containerWidth = 0;
     let sliderTrack: HTMLElement;
     let sliderContainer: HTMLElement;
