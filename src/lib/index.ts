@@ -1,6 +1,7 @@
 // place files you want to import through the `$lib` alias in this folder.
 
 import { env } from "$env/dynamic/private";
+import { fail } from "@sveltejs/kit";
 
 //
 function parseFilename(url: string): string | null {
@@ -44,3 +45,26 @@ export async function removeFile(url: string, fetch: typeof globalThis.fetch): P
         throw new Error("Failed to delete file");
     }
 }
+export async function uploadFile(file: File, fetch: typeof globalThis.fetch): Promise<string | null> {
+    if (!file || file.size === 0) {
+        console.error("No file provided!");
+        return null;
+    }
+    console.log(`File: ${file.name}, ${file.size} bytes, ${file.type} `);
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+        const response = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+        });
+        const result = await response.json();
+        return result.files[0].url;
+    } catch (error) {
+        console.error("Error uploading file:", error);
+        throw error;
+    }
+}
+
