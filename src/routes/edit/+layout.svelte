@@ -2,17 +2,18 @@
     import * as Sidebar from "$lib/components/ui/sidebar/index.js";
     import AppSidebar from "$lib/components/custom/edit/Sidebar.svelte";
     import SponsorsEdit from "$lib/components/custom/edit/SponsorEdit.svelte";
-    import OtherEdit from "$lib/components/custom/edit/OtherEdit.svelte";
     import { selectedItem } from "$lib/stores/edit";
     import ProjectManager from "$lib/components/custom/edit/ProjectManager.svelte";
     import { page } from "$app/state";
 
     let { children } = $props();
-    const projects = page.data.project.data;
+
+    const projects = $derived(page.data.project?.data ?? []);
+    const sponsors = $derived(page.data.sponsor?.data ?? []);
+
     const contentMap: Record<string, any> = {
         "Project Manager": ProjectManager,
         Sponsor: SponsorsEdit,
-        Other: OtherEdit,
     };
 </script>
 
@@ -31,7 +32,10 @@
                     </div>
                 {:else}
                     <div class="w-full max-[100%]">
-                        <svelte:component this={contentMap[$selectedItem]} />
+                        <svelte:component
+                            this={contentMap[$selectedItem]}
+                            {sponsors}
+                        />
                     </div>
                 {/if}
             {:else}

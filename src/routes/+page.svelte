@@ -12,9 +12,10 @@
     import { page } from "$app/state";
     // TODO: uncomment when API is available
     // import { page } from "$app/state";
-    const projects = page.data.project.data;
+    const projects = $derived(page.data.project.data ?? []);
+    const sponsors = $derived(page.data.sponsors.data ?? []);
 
-    let menuOpen = false;
+    let menuOpen = $state(false);
     let toggleMenu = () => {
         menuOpen = !menuOpen;
     };
@@ -27,7 +28,7 @@
         <Banner />
         <ProjectsGallery {projects} autoLoad={false} />
         <AboutContact />
-        <Partner />
+        <Partner {sponsors} />
         <Address />
         <Footer />
     </div>
