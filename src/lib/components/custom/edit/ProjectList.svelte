@@ -1,155 +1,473 @@
 <script lang="ts">
-    import { Button } from "$lib/components/ui/button";
-    import { Card, CardContent } from "$lib/components/ui/card";
-    import { Input } from "$lib/components/ui/input";
-    import { type Project } from "$lib/stores/project";
-    import { getIdFromName } from "$lib/stores/category";
-    import { cn } from "$lib/utils";
+    import * as Button from "$lib/components/ui/button/index";
+    import * as Card from "$lib/components/ui/card/index";
+    import * as Input from "$lib/components/ui/input/index";
+    import type { Project } from "$lib/stores/project"; // Ensure your Project type has a unique `id` property
+    import { categoryStore } from "$lib/stores/category";
+    import { invalidateAll } from "$app/navigation";
 
-    const { projects = [], onEdit } = $props();
+    // --- PROPS & STATE (Svelte 5 Runes) ---
+    let {
+        projects = [],
+        onEdit,
+    }: { projects: Project[]; onEdit: (project: Project) => void } = $props();
 
-    let selectedCategory: number | null = null;
-    let searchQuery = "";
+    let selectedCategory = $state<string | null>(null);
+    let searchQuery = $state("");
+    let deletingProjectId = $state<string | null>(null); // State to track the project being deleted
 
-    const categoryOptions = [
-        { value: 1, label: "Panama Visual" },
-        { value: 2, label: "Interact Dance" },
-        { value: 3, label: "Hologram" },
-        { value: 4, label: "3D Mapping" },
-    ];
+    // --- DERIVED STATE ---
+    const filteredProjects = $derived(() => {
+        return projects.filter((project) => {
+            const matchesCategory =
+                selectedCategory === null ||
+                project.category === selectedCategory;
+            if (!matchesCategory) return false;
 
-    let filteredProjects: Project[] = [];
-
-    filteredProjects = projects.filter((project) => {
-        const matchesCategory =
-            selectedCategory === null ||
-            getIdFromName(project.category) === selectedCategory;
-        let matchesSearch = true;
-        if (searchQuery) {
-            try {
-                const regex = new RegExp(searchQuery, "i");
-                matchesSearch = regex.test(project.title);
-            } catch (e) {
-                matchesSearch = project.title
-                    .toLowerCase()
-                    .includes(searchQuery.toLowerCase());
+            if (searchQuery.trim()) {
+                try {
+                    const regex = new RegExp(searchQuery, "i");
+                    return regex.test(project.title);
+                } catch (e) {
+                    return project.title
+                        .toLowerCase()
+                        .includes(searchQuery.toLowerCase());
+                }
             }
-        }
-        return matchesCategory && matchesSearch;
+            return true;
+        });
     });
 
-    function setCategory(value: number | null) {
-        selectedCategory = value;
-    }
-
+    // --- EVENT HANDLERS ---
     async function deleteProject(project: Project) {
         if (confirm(`Please confirm to delete project "${project.title}".`)) {
-            const res = await fetch("/api/projects", {
-                method: "DELETE",
-                body: JSON.stringify(project),
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (res.status != 200) alert(res.status);
-            window.location.reload();
+            // Set the deleting state for this specific project
+            deletingProjectId = project.id; // Assuming project has a unique 'id'
+
+            try {
+                const res = await fetch("/api/projects", {
+                    method: "DELETE",
+                    body: JSON.stringify(project),
+                    headers: { "Content-Type": "application/json" },
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    alert(
+                        `Failed to delete project: ${errorData.message || res.statusText}`,
+                    );
+                } else {
+                    window.location.reload();
+                }
+            } catch (error) {
+                alert("An error occurred while communicating with the server.");
+                console.error("Delete project error:", error);
+            } finally {
+                // Always reset the loading state
+                deletingProjectId = null;
+            }
         }
     }
 </script>
 
-<div class="space-y-6">
-    <div class="flex flex-col md:flex-row gap-4 items-start md:items-center">
-        <div class="flex flex-wrap gap-2">
-            <Button
+<div class="project-list-container">
+    <!-- Filter Controls -->
+    <div class="filter-controls">
+        <div class="category-filters">
+            <Button.Button
                 variant={selectedCategory === null ? "default" : "outline"}
-                size="sm"
-                class={cn(
-                    "border-[hsl(var(--border))]",
-                    selectedCategory === null
-                        ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary)/0.9)]"
-                        : "bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] hover:bg-[hsl(var(--secondary)/0.8)]",
-                )}
-                onclick={() => setCategory(null)}
+                class="filter-button"
+                onclick={() => (selectedCategory = null)}
             >
                 All
-            </Button>
-            {#each categoryOptions as option}
-                <Button
-                    variant={selectedCategory === option.value
+            </Button.Button>
+            {#each $categoryStore as category}
+                <Button.Button
+                    variant={selectedCategory === category.name
                         ? "default"
                         : "outline"}
-                    size="sm"
-                    class={cn(
-                        "border-[hsl(var(--border))]",
-                        selectedCategory === option.value
-                            ? "bg-[hsl(var(--primary))] text-[hsl(var(--primary-foreground))] hover:bg-[hsl(var(--primary)/0.9)]"
-                            : "bg-[hsl(var(--secondary))] text-[hsl(var(--secondary-foreground))] hover:bg-[hsl(var(--secondary)/0.8)]",
-                    )}
-                    onclick={() => setCategory(option.value)}
+                    class="filter-button"
+                    onclick={() => (selectedCategory = category.name)}
                 >
-                    {option.label}
-                </Button>
+                    {category.name.replace(/_/g, " ")}
+                </Button.Button>
             {/each}
         </div>
-        <Input
-            type="text"
-            bind:value={searchQuery}
-            placeholder="Search projects..."
-            class="max-w-xs bg-[hsl(var(--secondary))] border-[hsl(var(--border))] text-[hsl(var(--foreground))] placeholder-[hsl(var(--muted-foreground))] focus:ring-[hsl(var(--ring))] focus:border-[hsl(var(--ring))]"
-        />
+        <div class="search-wrapper">
+            <svg
+                class="search-icon"
+                xmlns="http://www.w3.org/2000/svg"
+                width="20"
+                height="20"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><circle cx="11" cy="11" r="8"></circle><line
+                    x1="21"
+                    y1="21"
+                    x2="16.65"
+                    y2="16.65"
+                ></line></svg
+            >
+            <Input.Input
+                type="text"
+                bind:value={searchQuery}
+                placeholder="Search by project title..."
+                class="form-input search-input"
+            />
+        </div>
     </div>
 
-    {#if filteredProjects.length > 0}
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {#each filteredProjects as project}
-                <Card
-                    class="overflow-hidden bg-[hsl(var(--card))] border-[hsl(var(--border))] shadow-lg hover:shadow-xl transition-shadow duration-200"
-                >
-                    <CardContent class="p-0">
-                        <img
-                            src={project.thumbnail}
-                            alt={project.title + " thumbnail"}
-                            class="w-full h-48 object-cover"
-                        />
-                        <div class="p-4 space-y-2">
-                            <h3
-                                class="text-lg font-semibold text-[hsl(var(--card-foreground))] truncate"
-                            >
+    <!-- Project Grid -->
+    {#if filteredProjects().length > 0}
+        <div class="project-grid">
+            {#each filteredProjects() as project}
+                <Card.Root class="project-card">
+                    <Card.Content class="p-0">
+                        <div class="image-container">
+                            <img
+                                src={project.thumbnail}
+                                alt="{project.title} thumbnail"
+                                class="card-image"
+                                loading="lazy"
+                            />
+                        </div>
+                        <div class="card-body">
+                            <h3 class="card-title" title={project.title}>
                                 {project.title}
                             </h3>
-                            <p
-                                class="text-sm text-[hsl(var(--muted-foreground))]"
-                            >
-                                {categoryOptions.find(
-                                    (c) => c.value === project.category,
-                                )?.label || "Unknown"}
-                            </p>
-                            <div class="flex gap-2">
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    class="border-[hsl(var(--border))] text-[hsl(var(--foreground))] bg-[hsl(var(--secondary))] hover:bg-[hsl(var(--secondary)/0.8)]"
-                                    onclick={() => {
-                                        onEdit(project);
-                                    }}
-                                >
-                                    Edit
-                                </Button>
-                                <Button
-                                    variant="destructive"
-                                    size="sm"
-                                    class="bg-[hsl(var(--destructive))] text-[hsl(var(--destructive-foreground))] hover:bg-[hsl(var(--destructive)/0.9)]"
-                                    onclick={() => deleteProject(project)}
-                                >
-                                    Delete
-                                </Button>
+                            <div class="card-meta">
+                                <!-- Category -->
+                                <div class="meta-item">
+                                    <svg
+                                        xmlns="http://www.w3.org/2000/svg"
+                                        width="14"
+                                        height="14"
+                                        viewBox="0 0 24 24"
+                                        fill="none"
+                                        stroke="currentColor"
+                                        stroke-width="2"
+                                        stroke-linecap="round"
+                                        stroke-linejoin="round"
+                                        ><path
+                                            d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"
+                                        ></path></svg
+                                    >
+                                    <span
+                                        >{project.category.replace(
+                                            /_/g,
+                                            " ",
+                                        )}</span
+                                    >
+                                </div>
+                                <!-- Time -->
+                                {#if project.time}
+                                    <div class="meta-item">
+                                        <svg
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            width="14"
+                                            height="14"
+                                            viewBox="0 0 24 24"
+                                            fill="none"
+                                            stroke="currentColor"
+                                            stroke-width="2"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            ><circle cx="12" cy="12" r="10"
+                                            ></circle><polyline
+                                                points="12 6 12 12 16 14"
+                                            ></polyline></svg
+                                        >
+                                        <span>{project.time}</span>
+                                    </div>
+                                {/if}
                             </div>
                         </div>
-                    </CardContent>
-                </Card>
+                        <div class="card-footer">
+                            {#if deletingProjectId === project.id}
+                                <div class="loading-container">
+                                    <div class="spinner"></div>
+                                    <span>Deleting...</span>
+                                </div>
+                            {:else}
+                                <Button.Button
+                                    variant="outline"
+                                    size="sm"
+                                    class="action-button edit-button"
+                                    onclick={() => onEdit(project)}
+                                    disabled={deletingProjectId !== null}
+                                >
+                                    Edit
+                                </Button.Button>
+                                <Button.Button
+                                    variant="destructive"
+                                    size="sm"
+                                    class="action-button delete-button"
+                                    onclick={() => deleteProject(project)}
+                                    disabled={deletingProjectId !== null}
+                                >
+                                    Delete
+                                </Button.Button>
+                            {/if}
+                        </div>
+                    </Card.Content>
+                </Card.Root>
             {/each}
         </div>
     {:else}
-        <p class="text-[hsl(var(--muted-foreground))]">No projects found.</p>
+        <div class="empty-state">
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="48"
+                height="48"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.5"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                ><path
+                    d="M21.5 12c0-5.25-4.25-9.5-9.5-9.5S2.5 6.75 2.5 12s4.25 9.5 9.5 9.5"
+                /><path
+                    d="M12.5 12.5a2.5 2.5 0 0 0-5 0 2.5 2.5 0 0 0 5 0Z"
+                /><path
+                    d="M12.5 12.5a2.5 2.5 0 0 1 5 0 2.5 2.5 0 0 1-5 0Z"
+                /></svg
+            >
+            <h4 class="empty-state-title">No Projects Found</h4>
+            <p class="empty-state-subtitle">
+                Try adjusting your search or filter settings.
+            </p>
+        </div>
     {/if}
 </div>
+
+<style>
+    :root {
+        --color-bg: #000000;
+        --color-bg-surface: #111111;
+        --color-bg-surface-hover: #1f1f1f;
+        --color-border: #2a2a2a;
+        --color-border-hover: #4a4a4a;
+        --color-text-primary: #ffffff;
+        --color-text-secondary: #a3a3a3;
+        --color-primary: #06b6d4;
+        --color-primary-hover: #0891b2;
+        --color-danger: #991b1b;
+        --color-danger-hover: #ef4444;
+    }
+
+    .project-list-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+    }
+
+    /* Filter Controls */
+    .filter-controls {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 1rem;
+    }
+    .category-filters {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    .filter-button {
+        font-size: 0.875rem;
+        padding: 0.5rem 1rem;
+        border-radius: 9999px;
+        transition: all 0.2s;
+    }
+    /* Svelte UI Button variants */
+    .filter-button[data-variant="outline"] {
+        background-color: transparent;
+        border: 1px solid var(--color-border);
+        color: var(--color-text-secondary);
+    }
+    .filter-button[data-variant="outline"]:hover {
+        background-color: var(--color-bg-surface-hover);
+        border-color: var(--color-border-hover);
+        color: var(--color-text-primary);
+    }
+    .filter-button[data-variant="default"] {
+        background-color: var(--color-primary);
+        color: var(--color-bg);
+        border-color: var(--color-primary);
+    }
+    .search-wrapper {
+        position: relative;
+        min-width: 250px;
+    }
+    .search-icon {
+        position: absolute;
+        top: 50%;
+        left: 0.875rem;
+        transform: translateY(-50%);
+        color: var(--color-text-secondary);
+        pointer-events: none;
+    }
+    .form-input.search-input {
+        padding-left: 2.75rem !important;
+        background: var(--color-bg-surface);
+    }
+    .form-input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid var(--color-border);
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        color: var(--color-text-primary);
+        background: var(--color-bg);
+        transition:
+            border-color 0.2s,
+            box-shadow 0.2s;
+    }
+
+    /* Project Grid */
+    .project-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+    .project-card {
+        background-color: var(--color-bg-surface);
+        border: 1px solid var(--color-border);
+        border-radius: 0.75rem;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        transition:
+            transform 0.2s ease,
+            box-shadow 0.2s ease;
+    }
+    .project-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+        border-color: var(--color-border-hover);
+    }
+    .image-container {
+        overflow: hidden;
+        aspect-ratio: 16 / 9;
+    }
+    .card-image {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+    .project-card:hover .card-image {
+        transform: scale(1.05);
+    }
+    .card-body {
+        padding: 1rem;
+        flex-grow: 1;
+    }
+    .card-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--color-text-primary);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+    .card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 0.75rem;
+        color: var(--color-text-secondary);
+        font-size: 0.875rem;
+    }
+    .meta-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    .card-footer {
+        display: flex;
+        gap: 0.75rem;
+        padding: 0 1rem 1rem;
+        border-top: 1px solid var(--color-border);
+        padding-top: 1rem;
+        margin-top: 1rem;
+        min-height: 40px; /* Ensure consistent footer height */
+        align-items: center;
+    }
+    .action-button {
+        flex-grow: 1;
+        font-size: 0.875rem;
+    }
+    .edit-button {
+        background-color: var(--color-bg-surface-hover);
+        border: 1px solid var(--color-border-hover);
+        color: var(--color-text-primary);
+    }
+    .edit-button:hover {
+        border-color: var(--color-text-primary);
+    }
+    .delete-button {
+        background-color: var(--color-danger);
+        color: var(--color-text-primary);
+        border-color: var(--color-danger);
+    }
+    .delete-button:hover {
+        background-color: var(--color-danger-hover);
+        border-color: var(--color-danger-hover);
+    }
+
+    /* --- Loading Spinner --- */
+    .loading-container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        gap: 0.75rem;
+        color: var(--color-text-secondary);
+        font-size: 0.875rem;
+    }
+    .spinner {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 3px solid var(--color-border);
+        border-top-color: var(--color-primary);
+        animation: spin 1s linear infinite;
+    }
+    @keyframes spin {
+        to {
+            transform: rotate(360deg);
+        }
+    }
+
+    /* Empty State */
+    .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 4rem 2rem;
+        border: 2px dashed var(--color-border);
+        border-radius: 1rem;
+        color: var(--color-text-secondary);
+    }
+    .empty-state svg {
+        margin-bottom: 1.5rem;
+    }
+    .empty-state-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--color-text-primary);
+    }
+    .empty-state-subtitle {
+        margin-top: 0.25rem;
+        max-width: 300px;
+    }
+</style>
