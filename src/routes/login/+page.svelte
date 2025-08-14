@@ -12,8 +12,9 @@
                 password: formData.get("password")?.toString(),
             }),
             method: "POST",
-        }).then((r) => r.json());
-        if (res.status != 200) return alert(res.message);
+        });
+        const json = await res.json();
+        if (res.status != 200) return alert(json.error);
         window.location.href = "/edit";
     }
 </script>
