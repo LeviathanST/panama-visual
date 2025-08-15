@@ -4,7 +4,7 @@ import { fail, type Actions } from "@sveltejs/kit";
 
 export const load = async ({ fetch }) => {
     const projectsRes = await fetch(env.BACKEND_URL + "/projects");
-    const sponsorsRes = await fetch(env.BACKEND_URL + "/projects");
+    const sponsorsRes = await fetch(env.BACKEND_URL + "/sponsors");
 
     const json1 = await projectsRes.json();
     const json2 = await sponsorsRes.json();
