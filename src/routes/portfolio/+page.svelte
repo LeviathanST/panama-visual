@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { page } from "$app/state";
     import Address from "$lib/components/custom/Address.svelte";
     import Footer from "$lib/components/custom/Footer.svelte";
     import MenuMobile from "$lib/components/custom/MenuMobile.svelte";
@@ -6,9 +7,7 @@
     import Contact from "$lib/components/custom/portfolio/Contact.svelte";
     import TopHeader from "$lib/components/custom/portfolio/TopHeader.svelte";
     import ProjectsGallery from "$lib/components/custom/ProjectsGallery.svelte";
-    import { project2Store } from "$lib/stores/project";
-    import { get } from "svelte/store";
-    const projects = get(project2Store);
+    const projects = page.data.project.data;
 
     let menuOpen = false;
     let toggleMenu = () => {
