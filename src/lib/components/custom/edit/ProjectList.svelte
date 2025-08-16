@@ -41,8 +41,7 @@
     // --- EVENT HANDLERS ---
     async function deleteProject(project: Project) {
         if (confirm(`Please confirm to delete project "${project.title}".`)) {
-            // Set the deleting state for this specific project
-            deletingProjectId = project.id; // Assuming project has a unique 'id'
+            deletingProjectId = project.id;
 
             try {
                 const res = await fetch("/api/projects", {
@@ -63,7 +62,6 @@
                 alert("An error occurred while communicating with the server.");
                 console.error("Delete project error:", error);
             } finally {
-                // Always reset the loading state
                 deletingProjectId = null;
             }
         }
@@ -140,7 +138,7 @@
                                 {project.title}
                             </h3>
                             <div class="card-meta">
-                                <!-- Category -->
+                                <!-- Meta items -->
                                 <div class="meta-item">
                                     <svg
                                         xmlns="http://www.w3.org/2000/svg"
@@ -163,7 +161,6 @@
                                         )}</span
                                     >
                                 </div>
-                                <!-- Time -->
                                 {#if project.time}
                                     <div class="meta-item">
                                         <svg
@@ -279,28 +276,46 @@
         flex-wrap: wrap;
         gap: 0.5rem;
     }
-    .filter-button {
+    :global(.filter-button) {
         font-size: 0.875rem;
         padding: 0.5rem 1rem;
         border-radius: 9999px;
-        transition: all 0.2s;
+        transition: all 0.2s ease-in-out; /* Smoother transition */
     }
-    /* Svelte UI Button variants */
-    .filter-button[data-variant="outline"] {
+    :global(.filter-button[data-variant="outline"]) {
         background-color: transparent;
         border: 1px solid var(--color-border);
         color: var(--color-text-secondary);
     }
-    .filter-button[data-variant="outline"]:hover {
+    :global(.filter-button[data-variant="outline"]:hover) {
         background-color: var(--color-bg-surface-hover);
-        border-color: var(--color-border-hover);
-        color: var(--color-text-primary);
+        border-color: var(--color-primary); /* Change border to cyan */
+        color: var(--color-primary); /* Change text to cyan */
+        transform: translateY(-3px); /* Increased lift */
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.3);
     }
-    .filter-button[data-variant="default"] {
+
+    :global(.filter-button[data-variant="default"]) {
         background-color: var(--color-primary);
         color: var(--color-bg);
         border-color: var(--color-primary);
+        transform: translateY(-2px);
+        box-shadow:
+            0 4px 10px rgba(0, 0, 0, 0.3),
+            0 0 20px color-mix(in srgb, var(--color-primary) 40%, transparent);
     }
+
+    :global(.filter-button[data-variant="default"]:hover) {
+        transform: translateY(-3px); /* Match hover lift */
+        box-shadow:
+            0 6px 15px rgba(0, 0, 0, 0.4),
+            0 0 25px color-mix(in srgb, var(--color-primary) 50%, transparent); /* Brighter glow on hover */
+    }
+    :global(.filter-button:focus-visible) {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+    }
+
     .search-wrapper {
         position: relative;
         min-width: 250px;
@@ -400,26 +415,35 @@
         min-height: 40px; /* Ensure consistent footer height */
         align-items: center;
     }
-    .action-button {
+    :global(.action-button) {
         flex-grow: 1;
         font-size: 0.875rem;
+        transition: all 0.2s ease;
     }
-    .edit-button {
+    :global(.edit-button) {
         background-color: var(--color-bg-surface-hover);
         border: 1px solid var(--color-border-hover);
         color: var(--color-text-primary);
     }
-    .edit-button:hover {
+    :global(.edit-button:hover) {
         border-color: var(--color-text-primary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
     }
-    .delete-button {
+    :global(.delete-button) {
         background-color: var(--color-danger);
         color: var(--color-text-primary);
         border-color: var(--color-danger);
     }
-    .delete-button:hover {
+    :global(.delete-button:hover) {
         background-color: var(--color-danger-hover);
         border-color: var(--color-danger-hover);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(153, 27, 27, 0.3);
+    }
+    :global(.action-button:focus-visible) {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
     }
 
     /* --- Loading Spinner --- */

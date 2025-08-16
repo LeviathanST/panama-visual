@@ -140,12 +140,11 @@
 
     .content-area {
         border-radius: 1rem;
-        padding: 2rem;
         min-height: 500px;
     }
 
     /* --- Buttons --- */
-    .submit-button {
+    :global(.submit-button) {
         display: flex;
         align-items: center;
         justify-content: center;
@@ -161,10 +160,16 @@
         color: black;
         border-color: var(--color-primary);
     }
-    .submit-button:hover:not(:disabled) {
+    :global(.submit-button:hover:not(:disabled)) {
         background: var(--color-primary-hover);
         border-color: var(--color-primary-hover);
         box-shadow: 0 4px 15px
             color-mix(in srgb, var(--color-primary) 30%, transparent);
+        transform: translateY(-2px);
+    }
+
+    :global(.submit-button:focus-visible) {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 3px;
     }
 </style>

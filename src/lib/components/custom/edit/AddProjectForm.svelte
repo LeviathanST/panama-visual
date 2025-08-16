@@ -314,7 +314,6 @@
                 <label for="video" class="form-label"
                     >Project Video (Optional)</label
                 >
-                <!-- FIX: Show preview IN ADDITION to the input, don't replace it -->
                 {#if videoUrl}
                     <div class="preview-container mb-4" transition:fade>
                         <video src={videoUrl} controls class="preview-video" />
@@ -369,7 +368,6 @@
             <div class="form-group">
                 <label for="thumbnail" class="form-label">Cover Thumbnail</label
                 >
-                <!-- FIX: Show preview IN ADDITION to the input, don't replace it -->
                 {#if thumbnailUrl}
                     <div class="preview-container mb-4" transition:fade>
                         <img
@@ -495,7 +493,6 @@
 </div>
 
 <style>
-    /* ... Your existing styles are great, just add one small utility class ... */
     .mb-4 {
         margin-bottom: 1rem;
     }
@@ -653,11 +650,15 @@
     .dropzone-content svg {
         stroke: var(--color-text-secondary);
         margin-bottom: 0.75rem;
-        transition: stroke 0.2s;
+        transition:
+            stroke 0.2s,
+            transform 0.2s;
     }
+
     .file-dropzone:hover .dropzone-content svg,
     .file-dropzone-sm:hover .dropzone-content svg {
         stroke: var(--color-primary);
+        transform: scale(1.1);
     }
 
     .dropzone-content b {
@@ -759,6 +760,7 @@
         border-color: var(--color-primary-hover);
         box-shadow: 0 4px 15px
             color-mix(in srgb, var(--color-primary) 30%, transparent);
+        transform: translateY(-2px);
     }
     .submit-button:disabled {
         background: #2a2a2a;
@@ -776,10 +778,18 @@
         background: var(--color-bg-surface);
         border-color: var(--color-border-hover);
         color: var(--color-text-primary);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
     }
     .cancel-button:disabled {
         opacity: 0.5;
         cursor: not-allowed;
+    }
+
+    .submit-button:focus-visible,
+    .cancel-button:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 3px;
     }
 
     /* --- Spinner --- */

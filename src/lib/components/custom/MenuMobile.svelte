@@ -78,7 +78,7 @@
         <div
             class="title py-[9px] text-center text-[500] text-[16px] text-[var(--general-color)] bg-[hsla(0,0%,100%,.03)] tracking-[1px]"
         >
-            ECLIPS PICTURES
+            PANAMA VISUAL
         </div>
     </div>
 </div>
