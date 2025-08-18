@@ -8,6 +8,8 @@
     const items = [
         { title: "Project Manager", icon: Gallery },
         { title: "Sponsor", icon: User },
+        { title: "Guess Contact", icon: User },
+        { title: "Register", icon: User },
     ];
 </script>
 

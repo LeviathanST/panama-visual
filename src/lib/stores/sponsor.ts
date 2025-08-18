@@ -1,6 +1,6 @@
 import { readable, writable } from "svelte/store";
 
-type Sponsor = {
+export type Sponsor = {
     id: number,
     src: string,
     alt: string
