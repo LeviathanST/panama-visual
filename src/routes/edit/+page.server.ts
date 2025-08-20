@@ -3,16 +3,25 @@ import { fail } from '@sveltejs/kit';
 import type { Actions } from "../$types";
 import { removeFile, uploadFile } from "$lib";
 
-export const load = async ({ }) => {
+export const load = async ({ cookies }) => {
     const projectRes = await fetch(env.BACKEND_URL + "/projects");
     const sponsorRes = await fetch(env.BACKEND_URL + "/sponsors");
-    console.log("reload");
+
+    const at = cookies.get("at");
+    const contactRes = await fetch(env.BACKEND_URL + "/contact-forms", {
+        headers: {
+            Authorization: `Bearer ${at}`,
+        },
+    });
 
     const projectJson = await projectRes.json();
     const sponsorJson = await sponsorRes.json();
+    const contactJson = await contactRes.json();
+
     return {
         project: projectJson,
         sponsor: sponsorJson,
+        forms: contactJson,
     };
 };
 

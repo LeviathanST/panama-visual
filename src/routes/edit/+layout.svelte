@@ -5,15 +5,20 @@
     import { selectedItem } from "$lib/stores/edit";
     import ProjectManager from "$lib/components/custom/edit/ProjectManager.svelte";
     import { page } from "$app/state";
+    import ContactForm from "$lib/components/custom/edit/ContactForm.svelte";
+    import Register from "$lib/components/custom/edit/Register.svelte";
 
     let { children } = $props();
 
     const projects = $derived(page.data.project?.data ?? []);
     const sponsors = $derived(page.data.sponsor?.data ?? []);
+    const forms = $derived(page.data.forms?.data ?? []);
 
     const contentMap: Record<string, any> = {
         "Project Manager": ProjectManager,
         Sponsor: SponsorsEdit,
+        "Guess Contact": ContactForm,
+        Register: Register,
     };
 </script>
 
@@ -30,12 +35,23 @@
                             {projects}
                         />
                     </div>
-                {:else}
+                {:else if $selectedItem == "Sponsor"}
                     <div class="w-full max-[100%]">
                         <svelte:component
                             this={contentMap[$selectedItem]}
                             {sponsors}
                         />
+                    </div>
+                {:else if $selectedItem == "Guess Contact"}
+                    <div class="w-full max-[100%]">
+                        <svelte:component
+                            this={contentMap[$selectedItem]}
+                            {forms}
+                        />
+                    </div>
+                {:else if $selectedItem == "Register"}
+                    <div class="w-full max-[100%]">
+                        <svelte:component this={contentMap[$selectedItem]} />
                     </div>
                 {/if}
             {:else}
