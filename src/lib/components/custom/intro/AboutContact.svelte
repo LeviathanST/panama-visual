@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { enhance } from "$app/forms";
+    import { invalidateAll } from "$app/navigation";
     import { translate } from "$lib/stores/language";
     import Button from "../common/Button.svelte";
 
@@ -150,28 +152,46 @@
                     class="mx-0
                     min-[768px]:my-auto
                     min-[768px]:max-w-[680px]"
-                    action="contact"
+                    action="/?/addContact"
+                    method="POST"
+                    enctype="multipart/form-data"
+                    use:enhance={() =>
+                        async ({ result }) => {
+                            if (result.type === "success") {
+                                alert("Your form is sent!");
+                                await invalidateAll();
+                            } else if (result.type === "failure") {
+                                alert(
+                                    result.data?.message ||
+                                        "An unknown error occurred.",
+                                );
+                            }
+                        }}
                 >
                     <input
                         class="txt
                         max-[767px]:m-0
                         "
+                        name="name"
                         type="text"
                         placeholder={translate("YOUR_NAME")}
                     />
                     <input
                         class="txt"
                         type="email"
+                        name="email"
                         placeholder={translate("EMAIL_ADDRESS")}
                     />
                     <input
                         class="txt"
                         type="text"
+                        name="interest_area"
                         placeholder={translate("INTEREST_AREA")}
                     />
                     <textarea
                         class="txt tea"
                         rows="3"
+                        name="content"
                         placeholder={translate("CONTENT")}
                     ></textarea>
                     <div
