@@ -3,6 +3,7 @@
     import { categoryStore } from "$lib/stores/category";
     import { enhance } from "$app/forms";
     import { fly, fade } from "svelte/transition";
+    import { invalidateAll } from "$app/navigation";
 
     export let onReset: (() => void) | undefined = undefined;
 
@@ -170,7 +171,7 @@
             return async ({ result }) => {
                 isSubmitting = false;
                 if (result.type === "success") {
-                    window.location.reload();
+                    await invalidateAll();
                 } else if (result.type === "failure") {
                     errorMessage =
                         result.data?.error || "An unknown error occurred.";

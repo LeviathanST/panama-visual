@@ -262,4 +262,17 @@ export const actions: Actions = {
             method: "DELETE",
         });
     },
+
+    addContact: async ({ request }) => {
+        const formData = await request.formData();
+        await fetch(env.BACKEND_URL + "/contact-forms/", {
+            method: "POST",
+            body: JSON.stringify({
+                name: formData.get("name"),
+                email: formData.get("email"),
+                interest_area: formData.get("interest_area"),
+                content: formData.get("content"),
+            })
+        });
+    },
 };
