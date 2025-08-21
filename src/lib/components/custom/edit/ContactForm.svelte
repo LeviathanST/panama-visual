@@ -1,4 +1,5 @@
 <script lang="ts">
+    import { invalidateAll } from "$app/navigation";
     import { fade, slide } from "svelte/transition";
 
     // --- TYPE DEFINITION ---
@@ -53,6 +54,7 @@
             if (updatedForm) {
                 updatedForm.is_confirmed = !updatedForm.is_confirmed;
             }
+            await invalidateAll();
         } catch (error: any) {
             alert(`Error: ${error.message}`);
         } finally {
@@ -82,6 +84,7 @@
                 throw new Error(error.message || "Failed to delete form.");
             }
             forms = forms.filter((f) => f.id !== formToDelete.id);
+            await invalidateAll();
         } catch (error: any) {
             alert(`Error: ${error.message}`);
         } finally {
