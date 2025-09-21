@@ -14,7 +14,7 @@
             method: "POST",
         });
         const json = await res.json();
-        if (res.status != 200) return alert(json.error);
+        if (res.status != 200) return alert(json.message);
         window.location.href = "/edit";
     }
 </script>
