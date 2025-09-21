@@ -1,11 +1,10 @@
 <script lang="ts">
-    import { get } from "svelte/store";
-    import { translate } from "$lib/stores/language";
-    import { categoryStore, writeCurrentCategory } from "$lib/stores/category";
+    import { writeCurrentCategory, getIdFromName } from "$lib/stores/category";
 
-    let selectedCategory = 1;
-    let currentIndex = 0;
-    let categories = get(categoryStore);
+    const { categoryInfo } = $props();
+
+    let selectedCategory = $state(1);
+    let currentIndex = $state(0);
 
     function chooseCategory(event: MouseEvent, category: number) {
         event.preventDefault();
@@ -23,7 +22,7 @@
     }
 
     function slideRight() {
-        if (currentIndex >= categories.length - 1) {
+        if (currentIndex >= categoryInfo.length - 1) {
             return;
         }
         currentIndex += 1;
@@ -45,34 +44,35 @@
                     class="slider-track flex transition-transform duration-300 ease-in-out"
                     style="transform: translateX(-{currentIndex * 100}px)"
                 >
-                    {#each categories as item, index}
+                    {#each categoryInfo as item, index}
                         <div class="menu-item w-[100px] flex-shrink-0">
                             <a
                                 class="flex flex-col items-center w-full h-full py-[10px] {selectedCategory ==
-                                item.id
+                                getIdFromName(item.type)
                                     ? 'active'
                                     : ''}"
                                 href="portfolio"
-                                on:click={(e) => chooseCategory(e, item.id)}
+                                on:click={(e) =>
+                                    chooseCategory(e, getIdFromName(item.type))}
                             >
                                 <div
                                     class="img relative w-full flex justify-center h-[50px]"
                                 >
                                     <img
                                         class="normal h-full"
-                                        src="/images/{item.normal}"
+                                        src={item.normal_img_url}
                                         alt="{item.name}-icon"
                                     />
                                     <img
                                         class="hover h-full opacity-0 absolute"
-                                        src="/images/{item.hover}"
-                                        alt="hover-{item.name}-icon"
+                                        src={item.hover_img_url}
+                                        alt="hover-{item.type}-icon"
                                     />
                                 </div>
                                 <span
                                     class="text-[12px] text-[rgba(255,255,255,0.1)] text-center w-full mt-[5px]"
                                 >
-                                    {translate(item.name)}
+                                    {item.name}
                                 </span>
                             </a>
                         </div>
@@ -101,7 +101,7 @@
                     </svg>
                 </button>
                 <button
-                    class="arrow-right {currentIndex < categories.length - 1
+                    class="arrow-right {currentIndex < categoryInfo.length - 1
                         ? 'active'
                         : 'inactive'}"
                     on:click={slideRight}
@@ -126,7 +126,7 @@
 
     <!---Width larger 768px-->
     <div class="menu max-[767px]:hidden w-full flex justify-center">
-        {#each categories as item}
+        {#each categoryInfo as item}
             <div
                 class="menu-item inline-block relative
                        min-[1200px]:w-[199.917px]
@@ -137,9 +137,12 @@
             >
                 <a
                     class="flex flex-col items-center w-full h-full py-[15px]
-                    {selectedCategory == item.id ? 'active' : ''}"
-                    href="portfolio?c={item.id}"
-                    on:click={(e) => chooseCategory(e, item.id)}
+                    {selectedCategory == getIdFromName(item.type)
+                        ? 'active'
+                        : ''}"
+                    href="portfolio?c={getIdFromName(item.type)}"
+                    on:click={(e) =>
+                        chooseCategory(e, getIdFromName(item.type))}
                 >
                     <div
                         class="img relative w-full flex justify-center
@@ -152,25 +155,25 @@
                             min-[1200px]:h-[90px]
                             min-[768px]:h-[50px]
                             "
-                            src="/images/{item.normal}"
+                            src={item.normal_img_url}
                             alt="{item.name}-icon"
                         />
                         <img
                             class="hover transition-all h-full duration-300 opacity-0 hover:opacity-1 absolute"
-                            src="/images/{item.hover}"
-                            alt="hover-{item.name}-icon"
+                            src={item.hover_img_url}
+                            alt="hover-{item.type}-icon"
                         />
                     </div>
                     <span
                         class="transition-all duration-300 text-center w-full mt-[15px]
-                            {selectedCategory != item.id
+                            {selectedCategory != getIdFromName(item.type)
                             ? 'text-white/10'
                             : 'text-white'}
                             min-[1200px]:text-[18px]
                             min-[768px]:text-[14px]
                         "
                     >
-                        {translate(item.name)}
+                        {item.name}
                     </span>
                 </a>
             </div>

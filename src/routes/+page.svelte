@@ -7,13 +7,12 @@
     import Partner from "$lib/components/custom/intro/Partner.svelte";
     import Address from "$lib/components/custom/Address.svelte";
     import MenuMobile from "$lib/components/custom/MenuMobile.svelte";
-    import { project2Store } from "$lib/stores/project";
-    import { get } from "svelte/store";
     import { page } from "$app/state";
     // TODO: uncomment when API is available
     // import { page } from "$app/state";
     const projects = $derived(page.data.project.data ?? []);
     const sponsors = $derived(page.data.sponsors.data ?? []);
+    const categoryInfo = $derived(page.data.categoryInfo.data ?? []);
 
     let menuOpen = $state(false);
     let toggleMenu = () => {
@@ -25,7 +24,7 @@
     <MenuMobile isOpen={menuOpen} />
     <div id="app-inner" class="flex-1 overflow-auto">
         <TopHeader {toggleMenu} />
-        <Banner />
+        <Banner {categoryInfo} />
         <ProjectsGallery {projects} autoLoad={false} />
         <AboutContact />
         <Partner {sponsors} />

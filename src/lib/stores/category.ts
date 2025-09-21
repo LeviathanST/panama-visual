@@ -34,6 +34,7 @@ const categories = [
     },
 ];
 export function getIdFromName(name: string): number {
+    if(!name) return 1;
     const cate = categories.filter(c => c.name == name);
     return cate[0].id;
 }
