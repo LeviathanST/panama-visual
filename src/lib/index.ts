@@ -24,7 +24,6 @@ export async function removeFile(url: string, fetch: typeof globalThis.fetch): P
     if (!filename) {
         throw new Error("Invalid file URL");
     }
-    console.log(env.ZIPLINE_URL + "/user/files/" + filename)
     const res = await fetch(env.ZIPLINE_URL + "/user/files/" + filename, {
         method: "GET",
         headers: {
@@ -39,6 +38,11 @@ export async function removeFile(url: string, fetch: typeof globalThis.fetch): P
             Authorization: env.ZIPLINE_TOKEN,
         },
     });
+
+    if(response.status == 404) {
+        console.log("Response status 404 is ignored when removing a file from zipline");
+        return;
+    }
 
     if (!response.ok) {
         console.error("Delete file failed with status:", response.status);
