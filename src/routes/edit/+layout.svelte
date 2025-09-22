@@ -5,6 +5,7 @@
     import { selectedItem } from "$lib/stores/edit";
     import ProjectManager from "$lib/components/custom/edit/ProjectManager.svelte";
     import { page } from "$app/state";
+    import CategoryInfoEdit from "$lib/components/custom/edit/CategoryInfoEdit.svelte";
     import ContactForm from "$lib/components/custom/edit/ContactForm.svelte";
     import Register from "$lib/components/custom/edit/Register.svelte";
 
@@ -13,11 +14,13 @@
     const projects = $derived(page.data.project?.data ?? []);
     const sponsors = $derived(page.data.sponsor?.data ?? []);
     const forms = $derived(page.data.forms?.data ?? []);
+    const categoryInfo = $derived(page.data.categoryInfo?.data ?? []);
 
     const contentMap: Record<string, any> = {
         "Project Manager": ProjectManager,
         Sponsor: SponsorsEdit,
         "Guess Contact": ContactForm,
+        "Category Info": CategoryInfoEdit,
         Register: Register,
     };
 </script>
@@ -47,6 +50,13 @@
                         <svelte:component
                             this={contentMap[$selectedItem]}
                             {forms}
+                        />
+                    </div>
+                {:else if $selectedItem == "Category Info"}
+                    <div class="w-full max-[100%]">
+                        <svelte:component
+                            this={contentMap[$selectedItem]}
+                            categories={categoryInfo}
                         />
                     </div>
                 {:else if $selectedItem == "Register"}

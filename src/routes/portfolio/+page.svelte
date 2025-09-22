@@ -8,6 +8,7 @@
     import TopHeader from "$lib/components/custom/portfolio/TopHeader.svelte";
     import ProjectsGallery from "$lib/components/custom/ProjectsGallery.svelte";
     const projects = page.data.project.data;
+    const categoryInfo = page.data.categories.data;
 
     let menuOpen = false;
     let toggleMenu = () => {
@@ -21,12 +22,12 @@
 />
 
 <div id="app" class="font-display w-[100vw] h-[100vh] flex">
-    <MenuMobile isOpen={menuOpen} />
+    <MenuMobile isOpen={menuOpen} {categoryInfo} />
     <div id="app-inner" class="flex-1 overflow-auto h-full w-full">
         <TopHeader {toggleMenu} />
         <div class="w-full h-[96px] bg-[rgb(31,32,34)]"></div>
         <div class="w-full max-[767px]:hidden">
-            <MenuOuter />
+            <MenuOuter {categoryInfo} />
         </div>
         <ProjectsGallery {projects} />
         <Contact />

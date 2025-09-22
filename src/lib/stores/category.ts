@@ -7,6 +7,12 @@ type Category = {
     id: number
 
 }
+type ResponseCategory = {
+    type: string,
+    name: string,
+    normal_img_url: string,
+    hover_img_url: string,
+}
 const categories = [
     {
         name: "PANAMA_VISUAL",
@@ -34,6 +40,7 @@ const categories = [
     },
 ];
 export function getIdFromName(name: string): number {
+    if(!name) return 0;
     const cate = categories.filter(c => c.name == name);
     return cate[0].id;
 }
