@@ -2,18 +2,20 @@
     import { get } from "svelte/store";
     import { translate } from "$lib/stores/language";
     import {
-        categoryStore,
+        getIdFromName,
         readCurrentCategory,
         writeCurrentCategory,
     } from "$lib/stores/category";
 
-    let categories = get(categoryStore);
+    const { categoryInfo, isOpen } = $props();
+
     let selectedCategory = $state(get(readCurrentCategory));
-    let { isOpen } = $props();
     function chooseCategory(event: MouseEvent, category: number) {
         selectedCategory = category;
         writeCurrentCategory.set(selectedCategory);
     }
+
+    categoryInfo.sort((a, b) => getIdFromName(a.type) - getIdFromName(b.type));
 </script>
 
 <div
@@ -35,11 +37,11 @@
             {translate("OUR_PORTFOLIO")}
         </div>
         <div class="categories flex flex-wrap relative">
-            {#each categories as item, index}
+            {#each categoryInfo as item, index}
                 <div class="menu-item w-[120px] py-[23px] h-[146px] relative">
                     <a
                         class="flex flex-col items-center w-full h-full py-[10px] {selectedCategory ==
-                        item.id
+                        getIdFromName(item.type)
                             ? 'active'
                             : ''}"
                         href="/portfolio"
@@ -50,12 +52,12 @@
                         >
                             <img
                                 class="transition-opacity duration-300 normal h-full"
-                                src="/images/{item.normal}"
+                                src="/images/{item.normal_img_url}"
                                 alt="{item.name}-icon"
                             />
                             <img
                                 class="transition-opacity duration-300 hover h-full opacity-0 absolute"
-                                src="/images/{item.hover}"
+                                src="/images/{item.hover_img_url}"
                                 alt="hover-{item.name}-icon"
                             />
                         </div>
@@ -66,7 +68,7 @@
                         </span>
                     </a>
 
-                    {#if index % 2 === 1 && index < categories.length - 2 && index >= 1}
+                    {#if index % 2 === 1 && index < categoryInfo.length - 2 && index >= 1}
                         <div class="plus-sign"></div>
                     {/if}
                 </div>

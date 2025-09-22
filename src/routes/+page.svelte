@@ -21,7 +21,7 @@
 </script>
 
 <div id="app" class="font-display w-[100vw] h-[100vh] flex">
-    <MenuMobile isOpen={menuOpen} />
+    <MenuMobile isOpen={menuOpen} {categoryInfo} />
     <div id="app-inner" class="flex-1 overflow-auto">
         <TopHeader {toggleMenu} />
         <Banner {categoryInfo} />

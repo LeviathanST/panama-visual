@@ -6,6 +6,7 @@ import { removeFile, uploadFile } from "$lib";
 export const load = async ({ cookies }) => {
     const projectRes = await fetch(env.BACKEND_URL + "/projects");
     const sponsorRes = await fetch(env.BACKEND_URL + "/sponsors");
+    const categoryInfoRes = await fetch(env.BACKEND_URL + "/categories");
 
     const at = cookies.get("at");
     const contactRes = await fetch(env.BACKEND_URL + "/contact-forms", {
@@ -17,11 +18,13 @@ export const load = async ({ cookies }) => {
     const projectJson = await projectRes.json();
     const sponsorJson = await sponsorRes.json();
     const contactJson = await contactRes.json();
+    const categoryInfoJson = await categoryInfoRes.json();
 
     return {
         project: projectJson,
         sponsor: sponsorJson,
         forms: contactJson,
+        categoryInfo: categoryInfoJson,
     };
 };
 
@@ -170,6 +173,88 @@ export const actions: Actions = {
         } catch (error) {
             console.error(error);
             return fail(500, { error: 'Could not delete sponsor. Please try again.' });
+        }
+    },
+    updateCategory: async ({ request, fetch, cookies }) => {
+        const at = cookies.get("at");
+        if (!at) {
+            return fail(401, { error: "Authentication token missing" });
+        }
+        const verify = await fetch(env.BACKEND_URL + `/verify`, {
+            headers: {
+                Authorization: `Bearer ${at}`,
+            },
+        });
+        if (!verify.ok) return fail(400, { error: "Invalid token" });
+
+        const data = await request.formData();
+
+        // --- Extract data from the form ---
+        const type = data.get('type') as string;
+        const name = data.get('name') as string;
+        const oldNormalImgUrl = data.get('old_normal_img_url') as string;
+        const oldHoverImgUrl = data.get('old_hover_img_url') as string;
+        const normalImgFile = data.get('normal_img') as File;
+        const hoverImgFile = data.get('hover_img') as File;
+
+        // Basic validation
+        if (!type || !name) {
+            return fail(400, { error: 'Category type and name are required.' });
+        }
+
+        try {
+            let finalNormalUrl = oldNormalImgUrl;
+            let finalHoverUrl = oldHoverImgUrl;
+
+            // --- Handle Normal Image Upload ---
+            if (normalImgFile && normalImgFile.size > 0) {
+                // 1. Upload the new file
+                const newUrl = await uploadFile(normalImgFile, fetch);
+                // 2. If upload was successful, remove the old file
+                if (newUrl) {
+                    await removeFile(oldNormalImgUrl, fetch);
+                    finalNormalUrl = newUrl;
+                }
+            }
+
+            // --- Handle Hover Image Upload ---
+            if (hoverImgFile && hoverImgFile.size > 0) {
+                // 1. Upload the new file
+                const newUrl = await uploadFile(hoverImgFile, fetch);
+                // 2. If upload was successful, remove the old file
+                if (newUrl) {
+                    await removeFile(oldHoverImgUrl, fetch);
+                    finalHoverUrl = newUrl;
+                }
+            }
+
+            // --- Prepare payload and send update to your backend API ---
+            const updatePayload = {
+                new_name: name,
+                new_normal_img_url: finalNormalUrl,
+                new_hover_img_url: finalHoverUrl,
+            };
+
+            const updateResponse = await fetch(`${env.BACKEND_URL}/categories/${type}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${at}`
+                },
+                body: JSON.stringify(updatePayload),
+            });
+
+            if (!updateResponse.ok) {
+                const errorData = await updateResponse.json();
+                return fail(updateResponse.status, { error: errorData.message || 'API update failed.' });
+            }
+
+            // Success! The `use:enhance` will now trigger invalidateAll() on the client
+            return { success: true };
+
+        } catch (error) {
+            console.error('Update category error:', error);
+            return fail(500, { error: 'An internal error occurred. Please try again.' });
         }
     },
 };
