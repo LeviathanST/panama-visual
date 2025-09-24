@@ -45,19 +45,20 @@
                             ? 'active'
                             : ''}"
                         href="/portfolio"
-                        onclick={(e) => chooseCategory(e, item.id)}
+                        onclick={(e) =>
+                            chooseCategory(e, getIdFromName(item.type))}
                     >
                         <div
                             class="img relative w-full flex justify-center h-[65px] mb-[15px]"
                         >
                             <img
                                 class="transition-opacity duration-300 normal h-full"
-                                src="/images/{item.normal_img_url}"
+                                src={item.normal_img_url}
                                 alt="{item.name}-icon"
                             />
                             <img
                                 class="transition-opacity duration-300 hover h-full opacity-0 absolute"
-                                src="/images/{item.hover_img_url}"
+                                src={item.hover_img_url}
                                 alt="hover-{item.name}-icon"
                             />
                         </div>
